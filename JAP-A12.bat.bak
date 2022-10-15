@@ -38,7 +38,7 @@ ECHO "                                   "
 ECHO "[ASSIGNMENT SCRIPT ---------------------]"
 
 ECHO "1. Compiling ............................."
-javac -Xlint -cp ".;%SRCDIR%;/*" %MAINCLASSSRC% -d %BINDIR% > %BINOUT% 2> %BINERR%
+javac -Xlint -cp ".;%SRCDIR%;" %MAINCLASSSRC% -d %BINDIR% > %BINOUT% 2> %BINERR%
 
 ECHO "2. Creating Jar .........................."
 cd bin

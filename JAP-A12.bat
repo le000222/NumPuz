@@ -20,8 +20,8 @@ SET DOCDIR=doc
 SET DOCPACK=game
 SET DOCOUT=game-javadoc.out
 SET DOCERR=game-javadoc.err
-SET MAINCLASSSRC=src/game/GameController.java
-SET MAINCLASSBIN=game.GameController
+SET MAINCLASSSRC=src/game/GameApp.java
+SET MAINCLASSBIN=game.GameApp
 @echo off
 
 ECHO " _________________________________ "
