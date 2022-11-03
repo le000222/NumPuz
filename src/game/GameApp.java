@@ -1,5 +1,12 @@
 package game;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.Timer;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 /**
@@ -23,7 +30,8 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @see game
  * @since 4.21.0
  */
-public class GameApp {
+public class GameApp extends JFrame {
+	
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
@@ -40,5 +48,21 @@ public class GameApp {
 		GameView view = new GameView(model);
 		GameController controller = new GameController(view, model);
 		controller.start();
+		GameIcon icon = new GameIcon();
+		timer();
+		icon.dispose();
+	}
+	
+	private static void timer() {
+		Timer timer = new Timer(1111, new ActionListener() {
+			public void actionPerformed(ActionEvent evnt) {}
+		});
+		timer.start();
+		try {
+			Thread.sleep(2222);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		timer.stop();
 	}
 }
