@@ -10,6 +10,7 @@ import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
@@ -28,6 +29,8 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 import javax.swing.event.MenuListener;
+
+import game.GameController.Button;
 
 /**
  * Purpose: This class is to store all of the GUI components and anything that relates to the interface of the game
@@ -56,7 +59,6 @@ import javax.swing.event.MenuListener;
  * @since 4.21.0
  */
 public class GameView  extends JFrame {
-	
 	/**
 	 * Fixed height for num grid
 	 */
@@ -70,14 +72,20 @@ public class GameView  extends JFrame {
 	 */
 	private final static int GRID_SIZE = 700;
 	
+	private GameController controller;
+	private GameModel model;
 	/**
 	 * Panel to store functionPanel and gridPanel
 	 */
-	private JPanel game;
+	private JPanel gamePanel;
 	/**
 	 * Panel to store function play mode
 	 */
 	private JPanel functionPanel;
+	/**
+	 * Panel to store support panel
+	 */
+	private JPanel support1, support2, support3, support4, support5;
 	/**
 	 * Menu Bar to the menu bar
 	 */
@@ -105,7 +113,7 @@ public class GameView  extends JFrame {
 	/**
 	 * Different menu items
 	 */
-	private JMenuItem newGame, instructions, exit, about, color;
+	private JMenuItem newGame, solutions, exit, about, color;
 	/**
 	 * Different buttons for different functionalities
 	 */
@@ -123,6 +131,10 @@ public class GameView  extends JFrame {
 	 */
 	private JComboBox<String> format;
 	/**
+	 * Drop down for type
+	 */
+	private JComboBox<String> level;
+	/**
 	 * Text field for point and timer
 	 */
 	private JTextField point, timer, textField;
@@ -134,11 +146,10 @@ public class GameView  extends JFrame {
 	 * border object to set border for JPanel
 	 */
 	private Border border = BorderFactory.createLineBorder(Color.BLACK); // for functions box
+	/**
+	 * border object to set border for JPanel
+	 */
 	private GridBagConstraints gbc;
-	private GameModel model;
-	
-	
-	
 	/**
 	 * Shuffle array to store integer that have been shuffled
 	 */
@@ -153,6 +164,8 @@ public class GameView  extends JFrame {
 	private int oldDim;
 	
 	//Getter methods
+	public JPanel getGame() { return gamePanel; }
+	public JPanel getFunction() { return functionPanel; }
 	public JPanel getGrids() { return grids; }
 	public JPanel getTextInput() { return textInput; }
 	public JButton getSave() { return save; }
@@ -162,7 +175,7 @@ public class GameView  extends JFrame {
 	public JButton getShow() { return show; }
 	public JButton getHide() { return hide; }
 	public JMenuItem getNewGame() { return newGame; }
-	public JMenuItem getInstructions() { return instructions; }
+	public JMenuItem getSolution() { return solutions; }
 	public JMenuItem getExit() { return exit; }
 	public JMenuItem getAbout() { return about; }
 	public JMenuItem getColor() { return color; }
@@ -171,31 +184,36 @@ public class GameView  extends JFrame {
 	public JRadioButton getDesign() { return design; }
 	public JComboBox<Integer> getDim() { return dim; }
 	public JComboBox<String> getFormat() { return format; }
+	public JComboBox<String> getLevel() { return level; }
 	public JTextField getPoint() { return point; }
 	public JTextField getTimer() { return timer; }
 	public JTextField getTextField() { return textField; }
 	public JTextArea getDetail() { return detail; }
 	
+	public JPanel getSupport1() { return support1; }
+	public JPanel getSupport2() { return support2; }
+	public JPanel getSupport3() { return support3; }
+	public JPanel getSupport4() { return support4; }
+	public JPanel getSupport5() { return support5; }
+
+	
 	//Setter methods
 	public void setPoint(JTextField point) { this.point = point; }
 	public void setTimer(JTextField timer) { this.timer = timer; }
 	public void setTextField(JTextField textField) { this.textField = textField; }
-//	public void setNewGame(JMenuItem newGame) { this.newGame = newGame; }
-//	public void setInstructions(JMenuItem instructions) { this.instructions = instructions; }
-//	public void setExit(JMenuItem exit) { this.exit = exit; }
-//	public void setAbout(JMenuItem about) { this.about = about; }
-//	public void setColor(JMenuItem color) { this.color = color; }
 	
-//	public final static Color FUNCBG = new Color(214, 234, 233);
-//	public final static Color MAINBG = new Color(146, 186, 146);
-//	public final static Color GRID = new Color(128, 155, 206);
-//	public final static Color GRID = new Color(149, 184, 209);
-//	public final static Color BTN = new Color(216, 115, 127);
-//	public final static Color TEXT = new Color(71, 92, 122);
-//	public final static Color BG3 = new Color(104, 93, 121);
+	public void setController(GameController controller) {
+		this.controller = controller;
+	}
+	public void setModel(GameModel model) {
+		this.model = model;
+	}
 	
 	public GameView(GameModel model) {
 		this.model = model;
+	}
+	
+	public void initComponents() {
 		this.add(gamePanel());
 		this.setJMenuBar(menuBar());
 		this.setTitle("NumPuz");
@@ -208,11 +226,10 @@ public class GameView  extends JFrame {
 	
 	public JPanel gamePanel() {
 		//add content to main JPanel
-		game = new JPanel(new BorderLayout());
-		game.add(functionPlay(), BorderLayout.EAST);
-		game.add(gridPanel(), BorderLayout.WEST);
-//		game.setBackground(MAINBG);
-		return game;
+		gamePanel = new JPanel(new BorderLayout());
+		gamePanel.add(functionPlay(), BorderLayout.EAST);
+		gamePanel.add(gridPanel(), BorderLayout.WEST);
+		return gamePanel;
 	}
 	
 	/**
@@ -223,22 +240,38 @@ public class GameView  extends JFrame {
 		menuBar = new JMenuBar();
 		gameMenu = new JMenu("Game");
 		gameMenu.setMnemonic('G');
+		
 		newGame = new JMenuItem("New Game", new ImageIcon(getClass().getClassLoader().getResource("resources/IconNewGame.png")));
 		newGame.setActionCommand("New Game");
-		instructions = new JMenuItem("How to play", new ImageIcon(getClass().getClassLoader().getResource("resources/IconNewGame.png")));
-		instructions.setActionCommand("New Game");
+		newGame.setMnemonic('N');
+		newGame.addActionListener(controller);
+		
+		solutions = new JMenuItem("Solution", new ImageIcon(getClass().getClassLoader().getResource("resources/IconSol.png")));
+		solutions.setActionCommand("Solution");
+		solutions.setMnemonic('S');
+		solutions.addActionListener(controller);
+		
 		exit = new JMenuItem("Exit", new ImageIcon(getClass().getClassLoader().getResource("resources/IconExit.png")));
-		exit.setActionCommand("New Game");
+		exit.setActionCommand("Exit");
+		exit.setMnemonic('E');
+		exit.addActionListener(controller);
+		
 		gameMenu.add(newGame);
-		gameMenu.add(instructions);
+		gameMenu.add(solutions);
 		gameMenu.add(exit);
 		
 		helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic('H');
 		about = new JMenuItem("About", new ImageIcon(getClass().getClassLoader().getResource("resources/IconAbout.png")));
-		about.setActionCommand("New Game");
+		about.setActionCommand("About");
+		about.setMnemonic('A');
+		about.addActionListener(controller);
+		
 		color = new JMenuItem("Color", new ImageIcon(getClass().getClassLoader().getResource("resources/IconColor.png")));
-		color.setActionCommand("New Game");
+		color.setActionCommand("Color");
+		color.setMnemonic('C');
+		color.addActionListener(controller);
+		
 		helpMenu.add(about);
 		helpMenu.add(color);
 		
@@ -249,7 +282,7 @@ public class GameView  extends JFrame {
 	
 	private JPanel gridPanel() {
 		gridPanel = new JPanel(new BorderLayout());
-		resetGrid(3, true); //add grids to grid panel
+		resetGrid(GameApp.DEFAULT_DIM, true); //add grids to grid panel
 		return gridPanel;
 	}
 	
@@ -258,14 +291,11 @@ public class GameView  extends JFrame {
 	 * @return JPanel of all tabs
 	 */
 	private JPanel functionPlay() {
-		JPanel support1, support2, support3, support4, support5, support6;
-		
 		// functions panel initialization
 		functionPanel = new JPanel();
 		functionPanel.setLayout(new GridBagLayout());
-//		functions.setBackground(FUNCBG);
 		gbc = new GridBagConstraints();
-		gbc.insets = new Insets(10, 0, 10, 10);
+		gbc.insets = new Insets(7, 0, 10, 10);
 		functionPanel.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		
 		//Image
@@ -274,9 +304,9 @@ public class GameView  extends JFrame {
 		// support 1: mode
 		support1 = new JPanel();
 		support1.setLayout(new GridBagLayout());
-//		support1.setBackground(FUNCBG);
 		design = new JRadioButton("Design");
-		play = new JRadioButton("Play", true);
+		play = new JRadioButton("Play");
+		play.addActionListener(controller);
 		ButtonGroup group = new ButtonGroup();
 		group.add(design);
 		group.add(play);
@@ -287,36 +317,30 @@ public class GameView  extends JFrame {
 		// support 2: dimension and type 
 		support2 = new JPanel();
 		support2.setLayout(new GridBagLayout());
-//		support2.setBackground(FUNCBG);
 		Integer dimen[] = {2,3,4,5,6,7,8,9,10};
 		String input[] = {"Number", "Text"};
+		String levels[] = {"Classic", "Easy", "Medium", "Hard"};
 		dim = new JComboBox<Integer>(dimen);
 		format = new JComboBox<String>(input);
+		level = new JComboBox<String>(levels);
 		dim.setSelectedIndex(1);
 		format.setSelectedIndex(0);
+		level.setSelectedIndex(0);
 		compConfig(new JLabel("<html><font size=\"4\"><b>DIMENSION:</b></font></html>"), support2, 0, 0, 1, gbc.insets);
 		compConfig(dim, support2, 1, 0, 1, gbc.insets);
 		compConfig(new JLabel("<html><font size=\"4\"><b>TYPE:</b></font></html>"), support2, 0, 1, 1, gbc.insets);
 		compConfig(format, support2, 1, 1, 1, gbc.insets);
+		compConfig(new JLabel("<html><font size=\"4\"><b>LEVEL:</b></font></html>"), support2, 0, 2, 1, gbc.insets);
+		compConfig(level, support2, 1, 2, 1, gbc.insets);
 		
-		// support 3: start and restart the game
-//		support3 = new JPanel();
-//	    support3.setLayout(new GridBagLayout());
-//	    support3.setBackground(BG4);
-//	    start = new JButton("START");
-//	    reset = new JButton("RESTART");
-//	    compConfig(start, support3, 0, 0, 1, gbc.insets);
-//	    compConfig(reset, support3, 0, 1, 1, gbc.insets);
-		
-	    // support 4: show and hide solution
-		support4 = new JPanel();
-		support4.setLayout(new GridBagLayout());
-//		support4.setBackground(FUNCBG);
+	    // support 3: show and hide solution
+		support3 = new JPanel();
+		support3.setLayout(new GridBagLayout());
 		show = new JButton("Show");
 		hide = new JButton("Hide");
-		compConfig(new JLabel("<html><font size=\"4\"><b>SOLUTION:</b></font></html>"), support4, 0, 0, 1, gbc.insets);
-		compConfig(show, support4, 2, 0, 1, gbc.insets);
-		compConfig(hide, support4, 3, 0, 1, gbc.insets);
+		compConfig(new JLabel("<html><font size=\"4\"><b>SOLUTION:</b></font></html>"), support3, 0, 0, 1, gbc.insets);
+		compConfig(show, support3, 2, 0, 1, gbc.insets);
+		compConfig(hide, support3, 3, 0, 1, gbc.insets);
 	
 		// detail of current execution
 		detail = new JTextArea(15, 10);
@@ -325,44 +349,41 @@ public class GameView  extends JFrame {
 		detail.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		
 		// support 5: point and timer
-		support5 = new JPanel();
+		support4 = new JPanel();
 		gbc.insets = new Insets(10, 10, 0, 0);
-		support5.setLayout(new GridBagLayout());
-//		support5.setBackground(FUNCBG);
+		support4.setLayout(new GridBagLayout());
 		point = new JTextField(5);
 		timer = new JTextField(5);
 		point.setText("0");
 		timer.setText("0");
 		point.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
 		timer.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
-		compConfig(new JLabel("POINTS"), support5, 0, 0, 1, gbc.insets);
-		compConfig(point, support5, 1, 0, 1, gbc.insets);
-		compConfig(new JLabel("TIMER"), support5, 2, 0, 1, gbc.insets);
-		compConfig(timer, support5, 3, 0, 1, gbc.insets);
+		compConfig(new JLabel("POINTS"), support4, 0, 0, 1, gbc.insets);
+		compConfig(point, support4, 1, 0, 1, gbc.insets);
+		compConfig(new JLabel("TIMER"), support4, 2, 0, 1, gbc.insets);
+		compConfig(timer, support4, 3, 0, 1, gbc.insets);
 		
 		// support 6: save and load previous/ new game
-	    support6 = new JPanel();
-	    support6.setLayout(new GridBagLayout());
-//	    support6.setBackground(FUNCBG);
+	    support5 = new JPanel();
+	    support5.setLayout(new GridBagLayout());
 	    gbc.insets = new Insets(10, 30, 0, 10);
 	    save = new JButton("SAVE");
 	    load = new JButton("LOAD");
-	    compConfig(save, support6, 0, 0, 1, gbc.insets);
-	    compConfig(load, support6, 1, 0, 1, gbc.insets);
+	    compConfig(save, support5, 0, 0, 1, gbc.insets);
+	    compConfig(load, support5, 1, 0, 1, gbc.insets);
 		
 	    // add supports to functions panel
 		gbc.insets = new Insets(0, 5, 5, 5);
 		compConfig(pic, functionPanel, 0, 0, 3, gbc.insets);
 		compConfig(support1, functionPanel, 0, 4, 3, gbc.insets);
 		compConfig(support2, functionPanel, 0, 5, 2, gbc.insets);
-		compConfig(support4, functionPanel, 0, 6, 2, gbc.insets);
+		compConfig(support3, functionPanel, 0, 6, 2, gbc.insets);
 		compConfig(scrollPane, functionPanel, 0, 7, 2, gbc.insets);
-		compConfig(support5, functionPanel, 0, 9, 1, gbc.insets);
-		compConfig(support6, functionPanel, 0, 10, 1, gbc.insets);
+		compConfig(support4, functionPanel, 0, 9, 1, gbc.insets);
+		compConfig(support5, functionPanel, 0, 10, 1, gbc.insets);
 		
 		// initialize text input field
 		textInput = new JPanel();
-//		textInput.setBackground(FUNCBG);
 		textLabel = new JLabel("Text Input: ");
 		textField = new JTextField(40);
 		textField.setText(" ");
@@ -418,13 +439,14 @@ public class GameView  extends JFrame {
 			for (int j = 0; j < newDim; j++) {
 				if (isTypeNum()) {
 					if (model.getShuffleNum()[i*newDim+j] == 0) {
-						matrix[i][j] = new JButton();
+						matrix[i][j] = new JButton("0");
 						matrix[i][j].setBackground(Color.BLACK);
-						grids.add(matrix[i][j]);
-						continue;
+//						matrix[i][j].setForeground(Color.BLACK);
 					}
-					matrix[i][j] = new JButton("" + model.getShuffleNum()[i*newDim+j]);
-//					matrix[i][j].setBackground(GRID);
+					else {
+						matrix[i][j] = new JButton("" + model.getShuffleNum()[i*newDim+j]);
+					}
+					matrix[i][j].addMouseListener(controller);
 					grids.add(matrix[i][j]);
 				}
 				else {
@@ -435,7 +457,6 @@ public class GameView  extends JFrame {
 						continue;
 					}
 					matrix[i][j] = new JButton("" + model.getShuffleText()[i*newDim+j]);
-//					matrix[i][j].setBackground(GRID);
 					grids.add(matrix[i][j]);
 				}
 			}
@@ -450,14 +471,12 @@ public class GameView  extends JFrame {
 				gridPanel.remove(grids);
 			}
 		}
-		//Remove old text input if text input is not null
-//		if (!textField.getText().equals(" ")) {
-			System.out.println("Go into text field!");
-			textInput.remove(textLabel);
-			textInput.remove(textField);
-			textInput.remove(setText);
-			gridPanel.remove(textInput);
-//		}
+		//Remove old text input if text input
+		System.out.println("Go into text field!");
+		textInput.remove(textLabel);
+		textInput.remove(textField);
+		textInput.remove(setText);
+		gridPanel.remove(textInput);
 		gridPanel.revalidate();
 		gridPanel.repaint();
 		oldDim = newDim;
@@ -489,7 +508,6 @@ public class GameView  extends JFrame {
 		for (int i = 0; i < oldDim; i++) {
 			for (int j = 0; j < oldDim; j++) {
 				matrix[i][j] = new JButton("");
-//				matrix[i][j].setBackground(GRID);
 				grids.add(matrix[i][j]);
 			}
 		}

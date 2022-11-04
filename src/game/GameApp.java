@@ -3,10 +3,7 @@ package game;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.Timer;
-import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 /**
@@ -31,26 +28,23 @@ import javax.swing.UnsupportedLookAndFeelException;
  * @since 4.21.0
  */
 public class GameApp extends JFrame {
+	public final static int DEFAULT_DIM = 3;
+	public GameView view;
+	public GameModel model;
+	public GameController controller;
 	
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
+	public GameApp() {
+		if (model == null) {
+			model = new GameModel();
 		}
-		GameModel model = new GameModel();
-		GameView view = new GameView(model);
-		GameController controller = new GameController(view, model);
-		controller.start();
-		GameIcon icon = new GameIcon();
-		timer();
-		icon.dispose();
+		if (view == null) {
+			view = new GameView(model);
+			view.setModel(model);
+		}
+		if (controller == null) {
+			controller = new GameController(view, model);
+		}
+		view.initComponents();
 	}
 	
 	private static void timer() {
@@ -64,5 +58,23 @@ public class GameApp extends JFrame {
 			e.printStackTrace();
 		}
 		timer.stop();
+	}
+	
+	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
+		}
+		new GameApp();
+		GameIcon icon = new GameIcon();
+		timer();
+		icon.dispose();
 	}
 }

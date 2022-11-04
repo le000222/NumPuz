@@ -27,32 +27,26 @@ public class GameModel {
 
 	private Integer[] shuffleNum;
 	private Character[] shuffleText;
+	private Integer[] solutionNum;
+	private Character[] solutionText;
+	private LinkedHashSet<Integer> treeSet;
 	
 	public Integer[] getShuffleNum() { return shuffleNum; }
 	public Character[] getShuffleText() { return shuffleText; }
+	public Integer[] getSolNum() { return solutionNum; }
+	public Character[] getSolText() { return solutionText; }
+	public void setSolNum(Integer[] solNum) { this.solutionNum = solNum; }
+	public void setSolText(Character[] solText) { this.solutionText = solText; }
 	public void setShuffleNum(Integer[] shuffleNum) { this.shuffleNum = shuffleNum; }
 	public void setShuffleText(Character[] shuffleText) { this.shuffleText = shuffleText; }
 	
-	private void shuffle(int size) {
-		System.out.println(size);
-		LinkedHashSet<Integer> treeSet = new LinkedHashSet<>();
-		while (treeSet.size() != size) {
-	      int random = (int) (Math.random() * size);
-	      treeSet.add(random);
-	    }
-		shuffleNum = treeSet.toArray(new Integer[treeSet.size()]);
-		for (int i = 0; i < shuffleNum.length; i++) {
-			System.out.print(shuffleNum[i] + " ");
-		}
-	}
-	
 	/**
-	 * Shuffle the buttons and attach to grids panel
-	 * @param size size of grid
-	 * @return void
+	 * Call shuffle functions to shuffle the number
+	 * @param newDim new dimension updated in GUI
 	 */
 	public void shuffleNum(int newDim) {
 		int size = newDim * newDim;
+		calSolutionNum(size);
 		shuffle(size);
 	}
 	
@@ -64,6 +58,7 @@ public class GameModel {
 	public boolean shuffleText(String text, int dim) {
 		int size = dim * dim;
 		
+		calSolutionText(text);
 		//convert input string to char
 		ArrayList<Integer> chars = new ArrayList<>();
 		for (int i = 0; i < text.length(); i++) {
@@ -73,7 +68,6 @@ public class GameModel {
 			int c = text.charAt(i); 
             chars.add(c);
         }
-		//create a shuffled num array as index for shuffleChar ArrayList
 		shuffle(size);
 		// Assign back char from chars ArrayList to according index from shuffleNum
 		Character[] temp = new Character[size];
@@ -81,12 +75,63 @@ public class GameModel {
 			int num = chars.get(i);
 			temp[shuffleNum[i]] = (char) num;
 		}
-		System.out.println("\nSize of shuffleChar arraylist: " + size);
-		//Convert ArrayList to array
 		shuffleText = temp;
+		
+		//delete
+		System.out.println("\nSize of shuffleChar arraylist: " + size);
 		for (int i = 0; i < temp.length; i++) {
 			System.out.print(temp[i] + " ");
 		}
 		return true;
+	}
+	
+	public void printSolution(boolean isNum) {
+		if (isNum) {
+			for (int i = 0; i < solutionNum.length; i++) {
+				System.out.print(solutionNum[i] + " ");
+			}
+		} else {
+			for (int i = 0; i < solutionText.length; i++) {
+				System.out.print(solutionText[i] + " ");
+			}
+		}
+	}
+	
+	/**
+	 * Shuffle numbers and assigned it to shuffleNum[]
+	 * @param size size of whole grids (dim^2)
+	 */
+	private void shuffle(int size) {
+		System.out.println(size);
+		treeSet = new LinkedHashSet<>();
+		while (treeSet.size() != size) {
+	      int random = (int) (Math.random() * size);
+	      treeSet.add(random);
+	    }
+		shuffleNum = treeSet.toArray(new Integer[treeSet.size()]);
+		for (int i = 0; i < shuffleNum.length; i++) {
+			System.out.print(shuffleNum[i] + " ");
+		}
+	}
+	
+	private void calSolutionNum(int size) {
+		treeSet = new LinkedHashSet<>();
+		for (int i = 0; i < size; i++) {
+			treeSet.add(i);
+		}
+		solutionNum = treeSet.toArray(new Integer[treeSet.size()]);
+	}
+	
+	private void calSolutionText(String text) {
+		ArrayList<Character> chars = new ArrayList<>();
+		for (int i = 0; i < text.length(); i++) {
+			chars.add(text.charAt(i)); 
+        }
+		solutionText = chars.toArray(new Character[chars.size()]);
+		
+		//delete
+		for (int i = 0; i < solutionText.length; i++) {
+			System.out.print(solutionText[i] + " ");
+		}
 	}
 }
