@@ -266,7 +266,6 @@ public class GameView  extends JFrame {
 			} catch(Exception e) {
 				///System.err.println(e); // Eventual errors when game finished
 			}
-		timerRunning = true;
 		}
 	}
 	
@@ -306,6 +305,7 @@ public class GameView  extends JFrame {
 		gameMenu.add(newGame);
 		gameMenu.add(solutions);
 		gameMenu.add(exit);
+		gameMenu.addActionListener(controller);
 		
 		helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic('H');
@@ -320,10 +320,10 @@ public class GameView  extends JFrame {
 		color.addActionListener(controller);
 		
 		helpMenu.add(about);
-		helpMenu.add(color);
-		
+		helpMenu.add(color);	
 		menuBar.add(gameMenu);
 		menuBar.add(helpMenu);
+		
 		return menuBar;
 	}
 	
@@ -352,6 +352,7 @@ public class GameView  extends JFrame {
 		support1 = new JPanel();
 		support1.setLayout(new GridBagLayout());
 		design = new JRadioButton("Design");
+		design.addActionListener(controller);
 		play = new JRadioButton("Play");
 		play.addActionListener(controller);
 		ButtonGroup group = new ButtonGroup();
@@ -368,8 +369,11 @@ public class GameView  extends JFrame {
 		String input[] = {"Number", "Text"};
 		String levels[] = {"Classic", "Easy", "Medium", "Hard"};
 		dim = new JComboBox<Integer>(dimen);
+		dim.addActionListener(controller);
 		format = new JComboBox<String>(input);
+		format.addActionListener(controller);
 		level = new JComboBox<String>(levels);
+		level.addActionListener(controller);
 		dim.setSelectedIndex(1);
 		format.setSelectedIndex(0);
 		level.setSelectedIndex(0);
@@ -384,7 +388,9 @@ public class GameView  extends JFrame {
 		support3 = new JPanel();
 		support3.setLayout(new GridBagLayout());
 		show = new JButton("Show");
+		show.addActionListener(controller);
 		hide = new JButton("Hide");
+		hide.addActionListener(controller);
 		compConfig(new JLabel("<html><font size=\"4\"><b>SOLUTION:</b></font></html>"), support3, 0, 0, 1, gbc.insets);
 		compConfig(show, support3, 2, 0, 1, gbc.insets);
 		compConfig(hide, support3, 3, 0, 1, gbc.insets);
@@ -415,7 +421,9 @@ public class GameView  extends JFrame {
 	    support5.setLayout(new GridBagLayout());
 	    gbc.insets = new Insets(10, 30, 0, 10);
 	    save = new JButton("SAVE");
+	    save.addActionListener(controller);
 	    load = new JButton("LOAD");
+	    load.addActionListener(controller);
 	    compConfig(save, support5, 0, 0, 1, gbc.insets);
 	    compConfig(load, support5, 1, 0, 1, gbc.insets);
 		
@@ -435,6 +443,7 @@ public class GameView  extends JFrame {
 		textField = new JTextField(40);
 		textField.setText(" ");
 		setText = new JButton("Set");
+		setText.addActionListener(controller);
 		
 		return functionPanel;
 	}
