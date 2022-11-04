@@ -117,12 +117,16 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		if (view.getPlay().isSelected()) {
 			view.getSave().setEnabled(false);
 			view.getLoad().setEnabled(false);
+			view.startTimer();
 			levels();
 			if (view.isTypeNum()) { actionNumSelected(); }
 			else if (!view.isTypeNum()) { actionTextSelected(); }
 		}
 		else if (view.getDesign().isSelected()) {
 			//Disable some buttons in the functionPanel
+			if(view.timerRunning) {
+				view.timerPause();
+			} 
 			view.getSave().setEnabled(true);
 			view.getLoad().setEnabled(true);
 		}

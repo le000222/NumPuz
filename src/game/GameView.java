@@ -9,9 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
-
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
@@ -27,10 +24,9 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import java.util.Timer;
+import java.util.TimerTask;
 import javax.swing.border.Border;
-import javax.swing.event.MenuListener;
-
-import game.GameController.Button;
 
 /**
  * Purpose: This class is to store all of the GUI components and anything that relates to the interface of the game
@@ -59,6 +55,10 @@ import game.GameController.Button;
  * @since 4.21.0
  */
 public class GameView  extends JFrame {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/**
 	 * Fixed height for num grid
 	 */
@@ -161,6 +161,19 @@ public class GameView  extends JFrame {
 	/**
 	 * Dimension of the grid
 	 */
+	protected int seconds = 0;
+	
+	protected boolean timerRunning = false;
+	/**
+	 * Timer
+	 */
+	protected Timer gameTimer = new Timer();
+
+	/**
+	 * Timer Task
+	 */
+	protected TimerTask timerTask;
+	
 	private int oldDim;
 	
 	//Getter methods
@@ -199,7 +212,6 @@ public class GameView  extends JFrame {
 	
 	//Setter methods
 	public void setPoint(JTextField point) { this.point = point; }
-	public void setTimer(JTextField timer) { this.timer = timer; }
 	public void setTextField(JTextField textField) { this.textField = textField; }
 	
 	public void setController(GameController controller) {
@@ -230,6 +242,41 @@ public class GameView  extends JFrame {
 		gamePanel.add(functionPlay(), BorderLayout.EAST);
 		gamePanel.add(gridPanel(), BorderLayout.WEST);
 		return gamePanel;
+	}
+	
+	public void startTimer() {
+		seconds = 0;
+		// Timer task
+		timerTask = new TimerTask() {
+			public void run() {
+				seconds++;
+				try {
+					resetTimer(seconds);
+				} catch (Exception e) {
+					///System.err.println(e); // Eventual errors when initializing text					
+				}
+			}
+		};
+
+		// Timer schedule
+		if(!timerRunning) {
+			try {
+				gameTimer.scheduleAtFixedRate(timerTask, 0, 1000);
+				timerRunning = true;
+			} catch(Exception e) {
+				///System.err.println(e); // Eventual errors when game finished
+			}
+		timerRunning = true;
+		}
+	}
+	
+	public void timerPause() {
+		timerTask.cancel();
+		timerRunning = false;
+	}
+	
+	public void resetTimer(int seconds) {
+		timer.setText(Integer.toString(seconds));
 	}
 	
 	/**
@@ -438,12 +485,13 @@ public class GameView  extends JFrame {
 		for (int i = 0; i < newDim; i++) {
 			for (int j = 0; j < newDim; j++) {
 				if (isTypeNum()) {
-					if (model.getShuffleNum()[i*newDim+j] == 0) {
+					if (i*newDim+j == 0) {
 						matrix[i][j] = new JButton("0");
+						Color.RGBtoHSB(200, 100, 50, null);
 						matrix[i][j].setBackground(Color.BLACK);
 //						matrix[i][j].setForeground(Color.BLACK);
 					}
-					else {
+					else if (i*newDim+j != 0) {
 						matrix[i][j] = new JButton("" + model.getShuffleNum()[i*newDim+j]);
 					}
 					matrix[i][j].addMouseListener(controller);
