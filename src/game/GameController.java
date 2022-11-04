@@ -41,6 +41,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	private GameView view;
 	private GameModel model;
 	boolean isDesignMode = true;
+	boolean gameIsRunning = false;
 //	private int dim = GameApp.DEFAULT_DIM;
 	private int limitTime = 0;
 	private JButton button;
@@ -83,10 +84,12 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		if (e.getSource() == view.getNewGame()) {
 			if (JOptionPane.showConfirmDialog(null, "Are you sure to restart the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				actionNumSelected();
+				view.startTimer();
 			}
 		}
 		else if(e.getSource() == view.getSolution()) {
 			 System.out.println("Solution");
+			 view.timerPause();
 //			 printSolution();
 		}
 		else if (e.getSource() == view.getExit()) {
@@ -109,26 +112,47 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		else if (e.getSource() == view.getAbout()) {
 			System.out.println("About the game");
 		}
+		else if (e.getSource() == view.getDim()) {
+			
+		}
+		else if (e.getSource() == view.getLevel()) {
+			
+		}
+		else if (e.getSource() == view.getType()) {
+			
+		}
 		
 		//Play/Design Mode
 		if (e.getSource() == view.getLoad()) { loadGameConfig(); }
 		else if (e.getSource() == view.getSave()) { saveGameConfig(); }
 		else if (e.getSource() == view.getSetText()) { actionSetTextButton(); }
+		
 		if (view.getPlay().isSelected()) {
 			view.getSave().setEnabled(false);
 			view.getLoad().setEnabled(false);
-			view.startTimer();
+			view.getPlay().setEnabled(false);
+			view.getSetText().setEnabled(false);
+			view.getDim().setEnabled(false);
+			view.getLevel().setEnabled(false);
+			view.getShow().setEnabled(false);
+			view.getHide().setEnabled(false);
+			view.getFormat().setEnabled(false);
 			levels();
 			if (view.isTypeNum()) { actionNumSelected(); }
 			else if (!view.isTypeNum()) { actionTextSelected(); }
 		}
 		else if (view.getDesign().isSelected()) {
 			//Disable some buttons in the functionPanel
-			if(view.timerRunning) {
-				view.timerPause();
-			} 
 			view.getSave().setEnabled(true);
 			view.getLoad().setEnabled(true);
+			view.getPlay().setEnabled(true);
+			view.getSetText().setEnabled(true);
+			view.getDim().setEnabled(true);
+			view.getLevel().setEnabled(true);
+			view.getShow().setEnabled(true);
+			view.getHide().setEnabled(true);
+			view.getFormat().setEnabled(true);
+			view.getDesign().setEnabled(false);
 		}
 		if (e.getSource() == button) {
 			System.out.println("button clicked");
@@ -182,15 +206,19 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	
 	private void levels() {
 		if (view.getLevel().getSelectedItem() == "Easy") {
+//			view.startTimer();
 //			timer(600000, false);
 		}
 		else if (view.getLevel().getSelectedItem() == "Medium") {
+//			view.startTimer();
 //			timer(300000, false);
 		}
 		else if (view.getLevel().getSelectedItem() == "Hard") {
+//			view.startTimer();
 //			timer(120000, false);
 		}
 		else {
+//			view.startTimer();
 //			timer(600000, true);
 		}
 	}
@@ -218,9 +246,20 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 //	}
 	
 	private void actionNumSelected() {
+		gameIsRunning = true;
+		if(!view.timerRunning) {
+			view.startTimer();
+		}
 		model.shuffleNum(view.getDimension());
 		view.removeOldGrid(view.getDimension());
 		view.resetGrid(view.getDimension(), false);
+	}
+	private void actionNumRestartSelected() {
+		if(gameIsRunning || view.timerRunning) {
+			view.timerPause();
+			gameIsRunning = false;
+		}
+		view.getPlay().setEnabled(true);
 	}
 	
 	private void actionTextSelected() {
