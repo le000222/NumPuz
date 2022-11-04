@@ -30,16 +30,59 @@ public class GameModel {
 	private Integer[] solutionNum;
 	private Character[] solutionText;
 	private LinkedHashSet<Integer> treeSet;
+	private int emptyPosRow;
+	private int emptyPosCol;
+	private int clickedPosRow;
+	private int clickedPosCol;
+//	private int dimen;
 	
 	public Integer[] getShuffleNum() { return shuffleNum; }
 	public Character[] getShuffleText() { return shuffleText; }
 	public Integer[] getSolNum() { return solutionNum; }
 	public Character[] getSolText() { return solutionText; }
+	public int getClickedPosRow() {
+		return clickedPosRow;
+	}
+	public int getClickedPosCol() {
+		return clickedPosCol;
+	}
+	public int getEmptyPosRow() {
+		return emptyPosRow;
+	}
+	public int getEmptyPosCol() {
+		return emptyPosCol;
+	}
+	public void setClickedPosRow(int clickedPosRow) {
+		this.clickedPosRow = clickedPosRow;
+	}
+	public void setClickedPosCol(int clickedPosCol) {
+		this.clickedPosCol = clickedPosCol;
+	}
+	public void setEmptyPosRow(int emptyPosRow) {
+		this.emptyPosRow = emptyPosRow;
+	}
+	public void setEmptyPosCol(int emptyPosCol) {
+		this.emptyPosCol = emptyPosCol;
+	}
 	public void setSolNum(Integer[] solNum) { this.solutionNum = solNum; }
 	public void setSolText(Character[] solText) { this.solutionText = solText; }
 	public void setShuffleNum(Integer[] shuffleNum) { this.shuffleNum = shuffleNum; }
 	public void setShuffleText(Character[] shuffleText) { this.shuffleText = shuffleText; }
+//	public void setDimen(int dimen) { this.dimen = dimen; }
 	
+	public boolean isBtnMovable(String buttonLabel, int dimen) {
+		for (int i = 0; i < shuffleNum.length; i++) {
+			if (shuffleNum[i] == Integer.parseInt(buttonLabel)) {
+				clickedPosRow = i / dimen; //row coordinates of button
+				clickedPosCol = i % dimen; //col coordinates of button
+				if (((clickedPosRow == emptyPosRow) && ((clickedPosCol == (emptyPosCol+1)) || (clickedPosCol == (emptyPosCol-1))))
+					|| ((clickedPosCol == emptyPosCol) && ((clickedPosRow == (emptyPosRow+1)) || (clickedPosRow == (emptyPosRow-1))))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	/**
 	 * Call shuffle functions to shuffle the number
 	 * @param newDim new dimension updated in GUI

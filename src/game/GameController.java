@@ -43,40 +43,18 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	boolean isDesignMode = true;
 	boolean gameIsRunning = false;
 //	private int dim = GameApp.DEFAULT_DIM;
-	private int limitTime = 0;
 	private JButton button;
+	private boolean isPlaying = true;
 	
 	public GameController() {}
 	
 	public GameController(GameView view, GameModel model) {
 		GameController controller = new GameController();
-//		this.view = view;
-//		this.model = model;
-//		System.out.println("This class view: " + this.view);
 		controller.view = view;
 		controller.model = model;
 		view.setController(controller);
 		System.out.println("controller object view: " + controller.view);
-//		start();
 	}
-
-//	public void start() {
-//		view.getDesign().addActionListener(this);
-//		view.getPlay().addActionListener(this);
-//		view.getDim().addActionListener(this);
-//		view.getFormat().addActionListener(this);
-//		view.getDesign().addActionListener(this);
-//		view.getSetText().addActionListener(this);
-//		view.getSave().addActionListener(this);
-//		view.getLoad().addActionListener(this);
-//		view.getAbout().addActionListener(this);
-//		view.getSolution().addActionListener(this);
-//		
-//		view.getNewGame().addActionListener(new MenuItem());
-//		view.getExit().addActionListener(new MenuItem());
-//		view.getColor().addActionListener(new MenuItem());
-//		view.getAbout().addActionListener(new MenuItem());
-//	}
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
@@ -89,25 +67,24 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		}
 		else if(e.getSource() == view.getSolution()) {
 			 System.out.println("Solution");
-			 view.timerPause();
+			 view.startTimer();
 //			 printSolution();
 		}
 		else if (e.getSource() == view.getExit()) {
-			if (JOptionPane.showConfirmDialog(null, "Are you sure to quit the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+			if (JOptionPane.showConfirmDialog(null, "Are you sure to exit the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				System.exit(0);
 			}
 		}
 		else if (e.getSource() == view.getColor()) {
-			// JOption Pane to change color for buttons --> HAVE NOT FIGURED OUT YET
+			// JOption Pane to change color for buttons
 			Color color = JColorChooser.showDialog(view.getGrids(),"Select a background color", Color.WHITE);
 			
-			// change color function panel
-			view.getFunction().setBackground(color);
-			view.getSupport1().setBackground(color);
-			view.getSupport2().setBackground(color);
-			view.getSupport3().setBackground(color);
-			view.getSupport4().setBackground(color);
-			view.getSupport5().setBackground(color);
+			// change color function panel  --> not WORKING
+			for (int i = 0; i < view.getDimension(); i++) {
+				for (int j = 0; j < view.getDimension(); j++) {
+					view.getMatrixButton(i, j).setBackground(color);
+				}
+			}
 		}
 		else if (e.getSource() == view.getAbout()) {
 			System.out.println("About the game");
@@ -126,6 +103,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		if (e.getSource() == view.getLoad()) { loadGameConfig(); }
 		else if (e.getSource() == view.getSave()) { saveGameConfig(); }
 		else if (e.getSource() == view.getSetText()) { actionSetTextButton(); }
+		else if (e.getSource() == view.getShow()) { System.out.println("Show"); }
 		
 		if (view.getPlay().isSelected()) {
 			view.getSave().setEnabled(false);
@@ -154,15 +132,14 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			view.getFormat().setEnabled(true);
 			view.getDesign().setEnabled(false);
 		}
-		if (e.getSource() == button) {
-			System.out.println("button clicked");
-		}
 	}
 	
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		System.out.println("Clicked");
-		System.out.println(((JButton) e.getSource()).getText());
+		String buttonLabel = ((JButton) e.getSource()).getText();
+		if (model.isBtnMovable(buttonLabel, view.getDimension())) {
+			view.updateButton();
+		}
 	}
 	
 	private void saveGameConfig() {
@@ -223,28 +200,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		}
 	}
 	
-//	private void timer(int limit, boolean isClassic) {
-//		int second = limit;
-//		Timer timer = new Timer(1000, new ActionListener() {
-//			public void actionPerformed(ActionEvent event) {}
-//		});
-//		timer.start();
-//		try {
-//			if (!isClassic) {
-//				view.getTimer().setText("" + second--);
-//			}
-//			else {
-//				view.getTimer().setText("" + second);
-//				second++;
-//			}
-//			System.out.println(second);
-//			Thread.sleep(limit);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-//		timer.stop();
-//	}
-	
 	private void actionNumSelected() {
 		gameIsRunning = true;
 		if(!view.timerRunning) {
@@ -254,6 +209,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		view.removeOldGrid(view.getDimension());
 		view.resetGrid(view.getDimension(), false);
 	}
+	
 	private void actionNumRestartSelected() {
 		if(gameIsRunning || view.timerRunning) {
 			view.timerPause();
@@ -282,20 +238,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		view.getTextField().setText(" ");
 	}
 	
-//	public void startTimer() { // Timer task
-//		timerTask = new TimerTask() { 
-//		public void run() { 
-//			seconds++; // Update your interface 
-//			} 
-//		}; 
-//		try { 
-//			timer.scheduleAtFixedRate(timerTask, 0, 1000); 
-//			} catch(Exception e) { // Eventual treatment 
-//				System.out.println();
-//			}
-//		}
-//	}
-
 	@Override
 	public void mousePressed(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -318,15 +260,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
-	}
-	
-	class Button implements ActionListener {
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			if (e.getSource() == button) {
-				System.out.println("button clicked");
-			}
-		}
 	}
 	
 //	class MenuItem implements ActionListener {
