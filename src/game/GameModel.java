@@ -30,59 +30,16 @@ public class GameModel {
 	private Integer[] solutionNum;
 	private Character[] solutionText;
 	private LinkedHashSet<Integer> treeSet;
-	private int emptyPosRow;
-	private int emptyPosCol;
-	private int clickedPosRow;
-	private int clickedPosCol;
-//	private int dimen;
 	
 	public Integer[] getShuffleNum() { return shuffleNum; }
 	public Character[] getShuffleText() { return shuffleText; }
 	public Integer[] getSolNum() { return solutionNum; }
 	public Character[] getSolText() { return solutionText; }
-	public int getClickedPosRow() {
-		return clickedPosRow;
-	}
-	public int getClickedPosCol() {
-		return clickedPosCol;
-	}
-	public int getEmptyPosRow() {
-		return emptyPosRow;
-	}
-	public int getEmptyPosCol() {
-		return emptyPosCol;
-	}
-	public void setClickedPosRow(int clickedPosRow) {
-		this.clickedPosRow = clickedPosRow;
-	}
-	public void setClickedPosCol(int clickedPosCol) {
-		this.clickedPosCol = clickedPosCol;
-	}
-	public void setEmptyPosRow(int emptyPosRow) {
-		this.emptyPosRow = emptyPosRow;
-	}
-	public void setEmptyPosCol(int emptyPosCol) {
-		this.emptyPosCol = emptyPosCol;
-	}
 	public void setSolNum(Integer[] solNum) { this.solutionNum = solNum; }
 	public void setSolText(Character[] solText) { this.solutionText = solText; }
 	public void setShuffleNum(Integer[] shuffleNum) { this.shuffleNum = shuffleNum; }
 	public void setShuffleText(Character[] shuffleText) { this.shuffleText = shuffleText; }
-//	public void setDimen(int dimen) { this.dimen = dimen; }
 	
-	public boolean isBtnMovable(String buttonLabel, int dimen) {
-		for (int i = 0; i < shuffleNum.length; i++) {
-			if (shuffleNum[i] == Integer.parseInt(buttonLabel)) {
-				clickedPosRow = i / dimen; //row coordinates of button
-				clickedPosCol = i % dimen; //col coordinates of button
-				if (((clickedPosRow == emptyPosRow) && ((clickedPosCol == (emptyPosCol+1)) || (clickedPosCol == (emptyPosCol-1))))
-					|| ((clickedPosCol == emptyPosCol) && ((clickedPosRow == (emptyPosRow+1)) || (clickedPosRow == (emptyPosRow-1))))) {
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 	/**
 	 * Call shuffle functions to shuffle the number
 	 * @param newDim new dimension updated in GUI
@@ -101,29 +58,17 @@ public class GameModel {
 	public boolean shuffleText(String text, int dim) {
 		int size = dim * dim;
 		
-		calSolutionText(text);
-		//convert input string to char
-		ArrayList<Integer> chars = new ArrayList<>();
-		for (int i = 0; i < text.length(); i++) {
-			if (i == 0) {
-				chars.add(0);
-			}
-			int c = text.charAt(i); 
-            chars.add(c);
-        }
+		calSolutionText(text,dim);
 		shuffle(size);
+		shuffleText = new Character[size];
 		// Assign back char from chars ArrayList to according index from shuffleNum
-		Character[] temp = new Character[size];
 		for (int i = 0; i < size; i++) {
-			int num = chars.get(i);
-			temp[shuffleNum[i]] = (char) num;
-		}
-		shuffleText = temp;
-		
+			shuffleText[i] = solutionText[shuffleNum[i]];
+		}		
 		//delete
-		System.out.println("\nSize of shuffleChar arraylist: " + size);
-		for (int i = 0; i < temp.length; i++) {
-			System.out.print(temp[i] + " ");
+		System.out.println("\nSize of shuffleText character array: " + size);
+		for (int i = 0; i < shuffleText.length; i++) {
+			System.out.print("["+shuffleText[i]+"]");
 		}
 		return true;
 	}
@@ -165,16 +110,22 @@ public class GameModel {
 		solutionNum = treeSet.toArray(new Integer[treeSet.size()]);
 	}
 	
-	private void calSolutionText(String text) {
+	private void calSolutionText(String text, int dim) {
 		ArrayList<Character> chars = new ArrayList<>();
-		for (int i = 0; i < text.length(); i++) {
+		chars.add('0');
+		int i;
+		for (i = 0; ( i < text.length() ) && ( (i+1) < (dim*dim) ) ; i++) {
 			chars.add(text.charAt(i)); 
         }
+		while(i+1 < dim*dim) {
+			chars.add(' ');
+		}
 		solutionText = chars.toArray(new Character[chars.size()]);
 		
+		
 		//delete
-		for (int i = 0; i < solutionText.length; i++) {
-			System.out.print(solutionText[i] + " ");
+		for (i = 0; i < solutionText.length; i++) {
+			System.out.println("["+solutionText[i]+"]");
 		}
 	}
 }

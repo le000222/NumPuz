@@ -29,9 +29,9 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class GameApp extends JFrame {
 	public final static int DEFAULT_DIM = 3;
-	private GameView view;
-	private GameModel model;
-	private GameController controller;
+	public GameView view;
+	public GameModel model;
+	public GameController controller;
 	
 	public GameApp() {
 		if (model == null) {
@@ -53,7 +53,7 @@ public class GameApp extends JFrame {
 		});
 		timer.start();
 		try {
-			Thread.sleep(1111);
+			Thread.sleep(2222);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -63,7 +63,7 @@ public class GameApp extends JFrame {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-//			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+//			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -73,9 +73,9 @@ public class GameApp extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
+		new GameApp();
 		GameIcon icon = new GameIcon();
 		timer();
 		icon.dispose();
-		new GameApp();
 	}
 }
