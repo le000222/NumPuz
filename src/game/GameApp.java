@@ -6,9 +6,10 @@ import javax.swing.Timer;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import java.awt.Color;
 /**
- * Purpose: This class is the main class of the program
  * File name: GameApp.java
+ * Purpose: This class is the main class of the program
  * Course: CST8221 JAP, Lab Section: 301
  * Date: 2 Oct 2022
  * Prof: Paulo Sousa
@@ -29,6 +30,14 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class GameApp extends JFrame {
 	public final static int DEFAULT_DIM = 3;
+	public final static String DEFAULT_ICON = "default";
+	public final static String WIN_ICON = "win";
+	public final static String FINISHED_ICON = "finished";
+	public final static String LOSE_ICON = "lose";
+	public final static int WIN = -1;
+	public final static Color DEFAULT_COLOR = Color.WHITE;
+	public final static Color ZERO_COLOR = Color.BLACK;
+	
 	public GameView view;
 	public GameModel model;
 	public GameController controller;
@@ -47,13 +56,13 @@ public class GameApp extends JFrame {
 		view.initComponents();
 	}
 	
-	private static void timer() {
+	public final static void timer(int time) {
 		Timer timer = new Timer(1111, new ActionListener() {
 			public void actionPerformed(ActionEvent evnt) {}
 		});
 		timer.start();
 		try {
-			Thread.sleep(2222);
+			Thread.sleep(time);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -63,7 +72,6 @@ public class GameApp extends JFrame {
 	public static void main(String[] args) {
 		try {
 			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-//			UIManager.setLookAndFeel("com.sun.java.swing.plaf.gtk.GTKLookAndFeel");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		} catch (InstantiationException e) {
@@ -73,9 +81,9 @@ public class GameApp extends JFrame {
 		} catch (UnsupportedLookAndFeelException e) {
 			e.printStackTrace();
 		}
-		new GameApp();
-		GameIcon icon = new GameIcon();
-		timer();
+		GameIcon icon = new GameIcon(DEFAULT_ICON);
+		timer(1111);
 		icon.dispose();
+		new GameApp();
 	}
 }

@@ -25,16 +25,19 @@ import java.util.LinkedHashSet;
  */
 public class GameModel {
 
+	private int points;
 	private Integer[] shuffleNum;
 	private Character[] shuffleText;
 	private Integer[] solutionNum;
 	private Character[] solutionText;
 	private LinkedHashSet<Integer> treeSet;
 	
+	public int getPoints() { return points; }
 	public Integer[] getShuffleNum() { return shuffleNum; }
 	public Character[] getShuffleText() { return shuffleText; }
 	public Integer[] getSolNum() { return solutionNum; }
 	public Character[] getSolText() { return solutionText; }
+	public void setPoints(int points) { this.points = points; }
 	public void setSolNum(Integer[] solNum) { this.solutionNum = solNum; }
 	public void setSolText(Character[] solText) { this.solutionText = solText; }
 	public void setShuffleNum(Integer[] shuffleNum) { this.shuffleNum = shuffleNum; }
@@ -46,7 +49,6 @@ public class GameModel {
 	 */
 	public void shuffleNum(int newDim) {
 		int size = newDim * newDim;
-		calSolutionNum(size);
 		shuffle(size);
 	}
 	
@@ -58,9 +60,11 @@ public class GameModel {
 	public boolean shuffleText(String text, int dim) {
 		int size = dim * dim;
 		
-		calSolutionText(text,dim);
 		shuffle(size);
 		shuffleText = new Character[size];
+		for (int i = 0; i < solutionText.length; i++) {
+			System.out.print("["+solutionText[i]+"]");
+		}
 		// Assign back char from chars ArrayList to according index from shuffleNum
 		for (int i = 0; i < size; i++) {
 			shuffleText[i] = solutionText[shuffleNum[i]];
@@ -73,16 +77,50 @@ public class GameModel {
 		return true;
 	}
 	
-	public void printSolution(boolean isNum) {
+	public void swapPosInArray(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
+		System.out.println(dimen + " " + zeroY + " " + zeroX + " " + clickedY + " " + clickedX);
+		System.out.println((zeroY * dimen + zeroX) + " " + (clickedY * dimen + clickedX));
 		if (isNum) {
-			for (int i = 0; i < solutionNum.length; i++) {
-				System.out.print(solutionNum[i] + " ");
+			for (int i = 0; i < shuffleNum.length; i++) {
+				System.out.print(shuffleNum[i] + " ");
 			}
-		} else {
-			for (int i = 0; i < solutionText.length; i++) {
-				System.out.print(solutionText[i] + " ");
+			shuffleNum[zeroY * dimen + zeroX] = shuffleNum[clickedY * dimen + clickedX];
+			shuffleNum[clickedY * dimen + clickedX] = 0;
+		}
+		else {
+			for (int i = 0; i < shuffleText.length; i++) {
+				System.out.print(shuffleText[i] + " ");
+			}
+			shuffleText[zeroY * dimen + zeroX] = shuffleText[clickedY * dimen + clickedX];
+			shuffleText[clickedY * dimen + clickedX] = 0;
+		}
+//		for (int i = 0; i < shuffleText.length; i++) {
+//			System.out.print(shuffleText[i] + " ");
+//		}
+	}
+	
+	public int countPoints(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
+		if (isNum) {
+			if ((shuffleNum[zeroY * dimen + zeroX] == solutionNum[zeroY * dimen + zeroX])
+					|| (shuffleNum[clickedY * dimen + clickedX] == solutionNum[clickedY * dimen + clickedX])) {
+				points += 1;
+				System.out.println("POINTS= " + points);
+			}
+			if (shuffleNum == solutionNum) {
+				return GameApp.WIN;
 			}
 		}
+		else {
+			if ((shuffleText[zeroY * dimen + zeroX] == solutionText[zeroY * dimen + zeroX])
+					|| (shuffleText[clickedY * dimen + clickedX] == solutionText[clickedY * dimen + clickedX])) {
+				points += 1;
+				System.out.println("POINTS= " + points);
+			}
+			if (shuffleText == solutionText) {
+				return GameApp.WIN;
+			}
+		}
+		return points;
 	}
 	
 	/**
@@ -102,30 +140,34 @@ public class GameModel {
 		}
 	}
 	
-	private void calSolutionNum(int size) {
+	public void calSolutionNum(int dim) {
+		int size = dim * dim; 
 		treeSet = new LinkedHashSet<>();
-		for (int i = 0; i < size; i++) {
+		for (int i = 1; i <= size; i++) {
+			if (i == size) {
+				treeSet.add(0);
+			}
 			treeSet.add(i);
 		}
 		solutionNum = treeSet.toArray(new Integer[treeSet.size()]);
+		for (int i = 0; i < size; i++) {
+			System.out.print(solutionNum[i] + " ");
+		}
+		System.out.println();
 	}
 	
-	private void calSolutionText(String text, int dim) {
+	public void calSolutionText(String text, int dim) {
 		ArrayList<Character> chars = new ArrayList<>();
-		chars.add('0');
 		int i;
 		for (i = 0; ( i < text.length() ) && ( (i+1) < (dim*dim) ) ; i++) {
 			chars.add(text.charAt(i)); 
         }
-		while(i+1 < dim*dim) {
-			chars.add(' ');
-		}
+		chars.add('0');
 		solutionText = chars.toArray(new Character[chars.size()]);
-		
 		
 		//delete
 		for (i = 0; i < solutionText.length; i++) {
-			System.out.println("["+solutionText[i]+"]");
+			System.out.print("["+solutionText[i]+"]" + " ");
 		}
 	}
 }
