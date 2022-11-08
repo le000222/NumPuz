@@ -77,7 +77,7 @@ public class GameModel {
 		return true;
 	}
 	
-	public void swapPosInArray(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
+	private void swapPosInArray(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
 		System.out.println(dimen + " " + zeroY + " " + zeroX + " " + clickedY + " " + clickedX);
 		System.out.println((zeroY * dimen + zeroX) + " " + (clickedY * dimen + clickedX));
 		if (isNum) {
@@ -99,7 +99,7 @@ public class GameModel {
 //		}
 	}
 	
-	public int countPoints(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
+	private int countPoints(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
 		if (isNum) {
 			if ((shuffleNum[zeroY * dimen + zeroX] == solutionNum[zeroY * dimen + zeroX])
 					|| (shuffleNum[clickedY * dimen + clickedX] == solutionNum[clickedY * dimen + clickedX])) {

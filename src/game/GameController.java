@@ -42,6 +42,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	private GameModel model;
 	boolean isDesignMode = true;
 	boolean gameIsRunning = false;
+	private int points = 0;
 	
 	public GameController() {}
 	
@@ -58,20 +59,36 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		//JMenuItems
 		if (e.getSource() == view.getNewGame()) {
 			if (JOptionPane.showConfirmDialog(null, "Are you sure to restart the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-				actionNumShuffle();
+				designNewGame();
 			}
 		}
-		else if(e.getSource() == view.getSolution()) {
-			 view.timerPause();
-			 printSolution();
-		}
+//		else if(e.getSource() == view.getSolution()) {
+//			if (view.getDesign().isSelected()) {
+//				JOptionPane.showMessageDialog(null, "Sorry, you cannot show solution in Design Mode");
+//				return;
+//			}
+//			if (JOptionPane.showConfirmDialog(null, "Are you sure to show solutions?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+//				System.out.println("Solutions");
+//				view.timerPause();
+//				printSolution();
+//				view.getDesign().setSelected(true);
+//				view.getPlay().setEnabled(false);
+//				view.getSave().setEnabled(false);
+//				view.getLoad().setEnabled(false);
+//				view.getDim().setEnabled(false);
+//				view.getLevel().setEnabled(false);
+//				view.getDisplay().setEnabled(false);
+//				view.getFormat().setEnabled(false);
+//				new GameIcon(GameApp.LOSE_ICON);
+//			}
+//		}
 		else if (e.getSource() == view.getExit()) {
 			if (JOptionPane.showConfirmDialog(null, "Are you sure to quit the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				System.exit(0);
 			}
 		}
 		else if (e.getSource() == view.getColor()) {
-			// JOption Pane to change color for buttons --> HAVE NOT FIGURED OUT YET
+			// JOption Pane to change color for buttons
 			System.out.println("Color");
 			bgColor = JColorChooser.showDialog(view.getGrids(),"Select a background color", Color.WHITE);
 			
@@ -82,30 +99,33 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 						continue;
 					}
 					view.getMatrixButton(i, j).setBackground(bgColor);
-//					view.getMatrixButton(i, j).setFont(new Font("Dialog", Font.BOLD, 30));
-//					view.getMatrixButton(i, j).setOpaque(true);
-//					view.getMatrixButton(i, j).setBorderPainted(false);
-//					view.getMatrixButton(i, j).setForeground(Color.BLACK);
-//					view.getMatrixButton(i, j).setBorder(BorderFactory.createLineBorder(Color.BLACK));
 				}
 			}
 		}
 		else if (e.getSource() == view.getAbout()) {
 			new GameIcon(GameApp.DEFAULT_ICON);
+			return;
 		}
 		
 		//Play/Design Mode
-		if (e.getSource() == view.getPlay() || view.getPlay().isSelected()) {
+		if (!gameIsRunning && view.getFormat().getSelectedItem().equals("Text")) { actionSetText(); }
+
+		if (e.getSource() == view.getPlay()) {
 			System.out.println("Play is selected");
 			view.getSave().setEnabled(false);
 			view.getLoad().setEnabled(false);
 			view.getPlay().setEnabled(false);
-			view.getSetText().setEnabled(false);
 			view.getDim().setEnabled(false);
 			view.getLevel().setEnabled(false);
 			view.getDisplay().setEnabled(false);
-			view.getRand().setEnabled(false);
 			view.getFormat().setEnabled(false);
+			view.getStop().setEnabled(true);
+			gameIsRunning = true;
+			if(!view.timerRunning) {
+				view.startTimer();
+			}
+			if (view.isTypeNum()) { actionNumShuffle(); }
+			else if (!view.isTypeNum()) { actionTextShuffle(); }
 		}
 		else if (e.getSource() == view.getDesign() || view.getDesign().isSelected()) {
 			// Disable some buttons in the functionPanel
@@ -113,36 +133,54 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			view.getSave().setEnabled(true);
 			view.getLoad().setEnabled(true);
 			view.getPlay().setEnabled(true);
-			view.getSetText().setEnabled(true);
 			view.getDim().setEnabled(true);
 			view.getLevel().setEnabled(true);
 			view.getDisplay().setEnabled(true);
-			view.getRand().setEnabled(true);
 			view.getFormat().setEnabled(true);
 			view.getDesign().setEnabled(false);
+			view.getStop().setEnabled(false);
+			model.calSolutionNum(view.getDimension());
 			if (e.getSource() == view.getDisplay()) {
 				levels();
 				if (view.isTypeNum()) { actionNumDisplay(); }
 				else if (!view.isTypeNum()) { actionTextDisplay(); }
 			}
 		}
+		
 		if (e.getSource() == view.getLoad()) { loadGameConfig(); }
 		else if (e.getSource() == view.getSave()) { saveGameConfig(); }
-		else if (e.getSource() == view.getSetText()) { actionSetText(); }
-		else if (e.getSource() == view.getRand()) { 
-			if (view.isTypeNum()) { actionNumShuffle(); }
-			else if (!view.isTypeNum()) { actionTextShuffle(); }
-		}
 		else if (e.getSource() == view.getStop()) {
 			if (JOptionPane.showConfirmDialog(null, "Stop the game and restart?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				//change active to design
-				//restart the game
+				gameIsRunning = false;
 				view.timerPause();
-				view.getDesign().setEnabled(true);
-				view.resetGrid(GameApp.DEFAULT_DIM, 0);
-				view.resetGrid(view.getDimension(), 1);
+				view.timerRunning = false;
 				view.getStop().setEnabled(false);
-				new GameIcon(GameApp.FINISHED_ICON);
+				GameIcon icon = new GameIcon(GameApp.LOSE_ICON);
+				if (JOptionPane.showConfirmDialog(null, "Design a new game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+					icon.dispose();
+					designNewGame();
+				}
+			}
+		}
+		else if(e.getSource() == view.getSolution()) {
+			if (view.getDesign().isSelected()) {
+				JOptionPane.showMessageDialog(null, "Sorry, you cannot show solution in Design Mode");
+				return;
+			}
+			if (JOptionPane.showConfirmDialog(null, "Are you sure to show solutions?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				System.out.println("Solutions");
+				view.timerPause();
+				printSolution();
+				view.getDesign().setSelected(true);
+				view.getPlay().setEnabled(false);
+				view.getSave().setEnabled(false);
+				view.getLoad().setEnabled(false);
+				view.getDim().setEnabled(false);
+				view.getLevel().setEnabled(false);
+				view.getDisplay().setEnabled(false);
+				view.getFormat().setEnabled(false);
+				new GameIcon(GameApp.LOSE_ICON);
 			}
 		}
 	}
@@ -152,8 +190,9 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		System.out.println("Clicked");
 		System.out.println(((JButton) e.getSource()).getText());
 		JButton self = (JButton) e.getSource();
-		if(swapZero(self)) {
-			//count points here.
+		// if button clicked isnt near the black button, doesnt change anything
+		if(!swapZero(self)) {
+			return;
 		}
 		reloadGrid(view.getMatrix());
 		view.getGrids().revalidate();
@@ -162,7 +201,20 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 				if(view.getMatrix()[i][j].getText().equalsIgnoreCase("0"))
 					view.getMatrix()[i][j].requestFocus();
 			}
-		}		
+		}
+		if (compareToSol(view.isTypeNum(), view.getDimension()) == GameApp.WIN) {
+			System.out.println("COMPARE");
+			view.timerPause();
+			gameIsRunning = false;
+			GameIcon icon = new GameIcon(GameApp.WIN_ICON);
+			if (JOptionPane.showConfirmDialog(null, "Design a new game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				icon.dispose();
+				designNewGame();
+			}
+			icon.dispose();
+			view.getStop().setEnabled(false);
+			return;
+		}
 	}
 	
 	private void reloadGrid(JButton[][] matrix) {
@@ -188,7 +240,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			//check the one above me
 			if(matrix[myY -1][myX].getText().equalsIgnoreCase("0") ) {
 				System.out.println("found above");
-				model.swapPosInArray(isNum, gridSize, myY-1, myX, myY, myX);
 				zeroButton = matrix[myY -1][myX];
 				matrix[myY -1][myX] = self;
 				System.out.println("Put self at Y=["+(myY-1)+"] X=["+(myX)+"]");
@@ -200,7 +251,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 				zeroButton.putClientProperty("x", myX);
 
 				//POINTS
-				countPoints(isNum, gridSize, myY-1, myX, myY, myX);
+				countPoints(isNum, gridSize, myY-1, myX);
 				return true;
 			}
 		}
@@ -209,7 +260,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			System.out.println("checking my right");
 			if(matrix[myY][myX+1].getText().equalsIgnoreCase("0")) {
 				System.out.println("found right");
-				model.swapPosInArray(isNum, gridSize, myY, myX+1, myY, myX);
 				zeroButton = matrix[myY][myX+1];				
 				matrix[myY][myX+1] = self;
 				System.out.println("Put self at Y=["+(myY)+"] X=["+(myX+1)+"]");
@@ -221,7 +271,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 				zeroButton.putClientProperty("x", myX);
 
 				//POINTS
-				countPoints(isNum, gridSize, myY, myX+1, myY, myX);
+				countPoints(isNum, gridSize, myY, myX+1);
 				return true;
 			}
 		}
@@ -230,7 +280,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			System.out.println("checking below me");
 			if(matrix[myY+1][myX].getText().equalsIgnoreCase("0")) {
 				System.out.println("found below");
-				model.swapPosInArray(isNum, gridSize, myY+1, myX, myY, myX);
 				zeroButton = matrix[myY+1][myX];
 				matrix[myY+1][myX] = self;
 				System.out.println("Put self at Y=["+(myY+1)+"] X=["+(myX)+"]");
@@ -242,7 +291,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 				zeroButton.putClientProperty("x", myX);
 
 				//POINTS
-				countPoints(isNum, gridSize, myY+1, myX, myY, myX);
+				countPoints(isNum, gridSize, myY+1, myX);
 				return true;
 			}
 		}
@@ -251,7 +300,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			System.out.println("checking my left");
 			if(matrix[myY][myX-1].getText().equalsIgnoreCase("0")) {
 				System.out.println("found left");
-				model.swapPosInArray(isNum, gridSize, myY, myX-1, myY, myX);
 				zeroButton = matrix[myY][myX-1];
 				matrix[myY][myX-1] = self;
 				System.out.println("Put self at Y=["+(myY)+"] X=["+(myX-1)+"]");
@@ -263,36 +311,52 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 				zeroButton.putClientProperty("x", myX);
 				
 				//POINTS
-				countPoints(isNum, gridSize, myY, myX-1, myY, myX);
+				countPoints(isNum, gridSize, myY, myX-1);
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	private int countPoints(boolean isNum, int dimen, int shuffleY, int shuffleX, int solY, int solX) {
-		int points = model.countPoints(isNum, dimen, shuffleY, shuffleX, solY, solX);
-		model.setPoints(points);
-		view.getPoint().setText(Integer.toString(points));
-		if (points == GameApp.WIN) {
-			new GameIcon(GameApp.WIN_ICON);
+	private void countPoints(boolean isNum, int dimen, int clickedY, int clickedX) {
+		if(isNum) {
+			System.out.println("Value of clicked button position inside solution array = " + model.getSolNum()[clickedY * dimen + clickedX]);
+			if (Integer.parseInt(view.getMatrixButton(clickedY, clickedX).getText()) == model.getSolNum()[clickedY * dimen + clickedX]) {
+				points++;
+			}
 		}
-		return points;
+		else {
+			System.out.println("Value of clicked button position inside solution array = " + model.getSolText()[clickedY * dimen + clickedX]);
+			if (view.getMatrixButton(clickedY, clickedX).getText().equals(Character.toString(model.getSolText()[clickedY * dimen + clickedX]))) {
+				points++;
+			}
+		}
+		view.getPoint().setText(String.valueOf(points));
+		System.out.println("POINTS = " + points);
 	}
 	
-//	private int countPoints(JButton[][] matrix, Character[] target) {
-//		int points = 0;
-//		//black square needs to be at the end but the black square is the first character in target
-//		//create a character string representation of the numbers to pass in here
-//		for (int y = 0; y < matrix[0].length ; y++) {
-//			for (int x = 0; x < matrix[0].length; x++) {				
-//				if( ( 1+x+y < target.length ) && ( matrix[x][y].getText().charAt(0) == target[1+x+y] ) ) {
-//					points += 10;
-//				}
-//			}
-//		}
-//		return points;
-//	}
+	private int compareToSol(boolean isNum, int dimen) {
+		int correctBtn = 0;
+		for (int i = 0; i < dimen; i++) {
+			for (int j = 0; j < dimen; j++) {
+				if (isNum) {
+					if (Integer.parseInt(view.getMatrixButton(i, j).getText()) == model.getSolNum()[i * dimen + j]) {
+						correctBtn++;
+					}
+				}
+				else {
+					if (view.getMatrixButton(i, j).getText().equals(Character.toString(model.getSolText()[i * dimen + j]))) {
+						correctBtn++;
+					}
+				}
+			}
+		}
+		if (correctBtn == dimen*dimen) {
+			return GameApp.WIN;
+		}
+		System.out.println("CORRECT BUTTON=" + correctBtn);
+		return correctBtn;
+	}
 	
 	private void saveGameConfig() {
 		Preferences pref = Preferences.userRoot();
@@ -324,6 +388,25 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		}
 	}
 	
+	private void designNewGame() {
+		view.getDesign().setSelected(true);
+		view.getDesign().setEnabled(false);
+		view.getPlay().setEnabled(true);
+		view.getSave().setEnabled(true);
+		view.getLoad().setEnabled(true);
+		view.getPlay().setEnabled(true);
+		view.getDim().setEnabled(true);
+		view.getLevel().setEnabled(true);
+		view.getDisplay().setEnabled(true);
+		view.getFormat().setEnabled(true);
+		view.getDesign().doClick();
+		view.getPoint().setText("0");
+		view.getDetail().setText("");
+		view.getTimer().setText("0");
+		view.removeOldGrid(view.getDimension());
+		view.resetGrid(view.getDimension(), 0);
+	}
+	
 	private void printSolution() {
 		view.removeOldGrid(view.getDimension());
 		view.resetGrid(view.getDimension(), 1);
@@ -350,35 +433,23 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	}
 	
 	private void actionNumDisplay() {
-		model.calSolutionNum(view.getDimension());
 		view.removeOldGrid(view.getDimension());
 		view.resetGrid(view.getDimension(), 1);
 	}
 	
 	private void actionNumShuffle() {
-		gameIsRunning = true;
-		if(!view.timerRunning) {
-			view.startTimer();
-		}
 		model.shuffleNum(view.getDimension());
 		view.removeOldGrid(view.getDimension());
 		view.resetGrid(view.getDimension(), 2);
 	}
-	private void actionNumRestartSelected() {
-		if(gameIsRunning || view.timerRunning) {
-			view.timerPause();
-			gameIsRunning = false;
-		}
-		view.getPlay().setEnabled(true);
-	}
 	
-	private void actionTextDisplay() {
+	private void actionSetText() {
 		view.removeOldGrid(view.getDimension());
 		view.displayTextInput();
 		view.resetGrid(view.getDimension(), 0);
 	}
 	
-	private void actionSetText() {
+	private void actionTextDisplay() {
 		String text = view.getTextField().getText();
 		int dim = view.getDimension();
 		if (text.length() < dim*dim) {
@@ -391,10 +462,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	}
 	
 	private void actionTextShuffle() {
-		gameIsRunning = true;
-		if(!view.timerRunning) {
-			view.startTimer();
-		}
 		String text = view.getTextField().getText();
 		model.shuffleText(text, view.getDimension());
 		view.removeOldGrid(view.getDimension());

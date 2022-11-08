@@ -120,7 +120,7 @@ public class GameView  extends JFrame {
 	/**
 	 * Different buttons for different functionalities
 	 */
-	private JButton save, load, stop, display, rand, setText;
+	private JButton save, load, stop, display;
 	/**
 	 * Buttons to design and play game
 	 */
@@ -191,13 +191,11 @@ public class GameView  extends JFrame {
 	public JButton getLoad() { return load; }
 	public JButton getStop() { return stop; }
 	public JButton getDisplay() { return display; }
-	public JButton getRand() { return rand; }
 	public JMenuItem getNewGame() { return newGame; }
 	public JMenuItem getSolution() { return solutions; }
 	public JMenuItem getExit() { return exit; }
 	public JMenuItem getAbout() { return about; }
 	public JMenuItem getColor() { return color; }
-	public JButton getSetText() { return setText; }
 	public JRadioButton getPlay() { return play; }
 	public JRadioButton getDesign() { return design; }
 	public JComboBox<Integer> getDim() { return dim; }
@@ -223,6 +221,7 @@ public class GameView  extends JFrame {
 	public void initComponents() {
 		this.add(gamePanel());
 		this.setJMenuBar(menuBar());
+		design.doClick();
 		this.setTitle("NumPuz");
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		this.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("resources/GameIcon.png")).getImage());
@@ -359,7 +358,7 @@ public class GameView  extends JFrame {
 		// support 2: dimension and type 
 		support2 = new JPanel();
 		support2.setLayout(new GridBagLayout());
-		Integer dimen[] = {3,4,5,6,7,8};
+		Integer dimen[] = {3,4,5,6};
 		String input[] = {"Number", "Text"};
 		String levels[] = {"Classic", "Easy", "Medium", "Hard"};
 		dim = new JComboBox<Integer>(dimen);
@@ -383,10 +382,7 @@ public class GameView  extends JFrame {
 		support3.setLayout(new GridLayout());
 		display = new JButton("DISPLAY");
 		display.addActionListener(controller);
-		rand = new JButton("RANDOM");
-		rand.addActionListener(controller);
 		support3.add(display);
-		support3.add(rand);
 	
 		// detail of current execution
 		detail = new JTextArea(12, 10);
@@ -439,8 +435,6 @@ public class GameView  extends JFrame {
 		textLabel = new JLabel("Text Input: ");
 		textField = new JTextField(40);
 		textField.setText("");
-		setText = new JButton("Set");
-		setText.addActionListener(controller);
 		
 		return functionPanel;
 	}
@@ -584,7 +578,6 @@ public class GameView  extends JFrame {
 		System.out.println("Remove old Grid");
 		textInput.remove(textLabel);
 		textInput.remove(textField);
-		textInput.remove(setText);
 		gridPanel.remove(textInput);
 		gridPanel.revalidate();
 		gridPanel.repaint();
@@ -633,7 +626,6 @@ public class GameView  extends JFrame {
 	public void displayTextInput() {
 		textInput.add(textLabel);
 		textInput.add(textField);
-		textInput.add(setText);
 		gridPanel.add(textInput, BorderLayout.SOUTH);
 	}
 }
