@@ -127,7 +127,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			view.getLoad().setEnabled(false);
 			view.getPlay().setEnabled(false);
 			view.getDim().setEnabled(false);
-			view.getLevel().setEnabled(false);
+//			view.getLevel().setEnabled(false);
 			view.getDisplay().setEnabled(false);
 			view.getFormat().setEnabled(false);
 			view.getStop().setEnabled(true);
@@ -371,8 +371,10 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		int correctBtn = 0;
 		for (int i = 0; i < dimen; i++) {
 			for (int j = 0; j < dimen; j++) {
-				if (isNum && Integer.parseInt(view.getMatrixButton(i, j).getText()) == model.getSolNum()[i * dimen + j]) {
+				if (isNum) {
+					if (Integer.parseInt(view.getMatrixButton(i, j).getText()) == model.getSolNum()[i * dimen + j]) {
 					correctBtn++;
+					}
 				}
 				else {
 					if (view.getMatrixButton(i, j).getText().equals(Character.toString(model.getSolText()[i * dimen + j]))) {

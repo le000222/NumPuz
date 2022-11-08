@@ -17,7 +17,6 @@ SET JAROUT=game-jar.out
 SET JARERR=game-jar.err
 SET DOCPACK=game
 SET DOCDIR=doc
-SET DOCPACK=game
 SET DOCOUT=game-javadoc.out
 SET DOCERR=game-javadoc.err
 SET MAINCLASSSRC=src/game/GameApp.java
