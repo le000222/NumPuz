@@ -25,27 +25,57 @@ import java.util.LinkedHashSet;
  */
 public class GameModel {
 
-	private int points;
+//	private int points;
+	/**
+	 * shuffled array for numbers
+	 */
 	private Integer[] shuffleNum;
+	/**
+	 * shuffled array for text
+	 */
 	private Character[] shuffleText;
+	/**
+	 * solution array for numbers
+	 */
 	private Integer[] solutionNum;
+	/**
+	 * solution array for text
+	 */
 	private Character[] solutionText;
+	/**
+	 * treeSet to store shuffle unique numbers
+	 */
 	private LinkedHashSet<Integer> treeSet;
 	
-	public int getPoints() { return points; }
+//	public int getPoints() { return points; }
+//	public void setPoints(int points) { this.points = points; }
+	
+	//getters
 	public Integer[] getShuffleNum() { return shuffleNum; }
 	public Character[] getShuffleText() { return shuffleText; }
 	public Integer[] getSolNum() { return solutionNum; }
 	public Character[] getSolText() { return solutionText; }
-	public void setPoints(int points) { this.points = points; }
-	public void setSolNum(Integer[] solNum) { this.solutionNum = solNum; }
-	public void setSolText(Character[] solText) { this.solutionText = solText; }
-	public void setShuffleNum(Integer[] shuffleNum) { this.shuffleNum = shuffleNum; }
-	public void setShuffleText(Character[] shuffleText) { this.shuffleText = shuffleText; }
 	
 	/**
+	 * Shuffle numbers and assigned it to shuffleNum[]
+	 * @param size size of whole grids (dim^2)
+	 */
+	private void shuffle(int size) {
+		System.out.println(size);
+		treeSet = new LinkedHashSet<>();
+		while (treeSet.size() != size) {
+			int random = (int) (Math.random() * size);
+			treeSet.add(random);
+		}
+		shuffleNum = treeSet.toArray(new Integer[treeSet.size()]);
+		for (int i = 0; i < shuffleNum.length; i++) {
+			System.out.print(shuffleNum[i] + " ");
+		}
+	}
+
+	/**
 	 * Call shuffle functions to shuffle the number
-	 * @param newDim new dimension updated in GUI
+	 * @param newDim new dimension selected by users
 	 */
 	public void shuffleNum(int newDim) {
 		int size = newDim * newDim;
@@ -53,18 +83,14 @@ public class GameModel {
 	}
 	
 	/**
-	 * Shuffle the text in int and assign it to shuffle array
+	 * Shuffle the text using shuffled array of shuffleNum[] to assign back to shuffleText[]
 	 * @param size size of grid
-	 * @return void
 	 */
 	public boolean shuffleText(String text, int dim) {
 		int size = dim * dim;
 		
 		shuffle(size);
 		shuffleText = new Character[size];
-		for (int i = 0; i < solutionText.length; i++) {
-			System.out.print("["+solutionText[i]+"]");
-		}
 		// Assign back char from chars ArrayList to according index from shuffleNum
 		for (int i = 0; i < size; i++) {
 			shuffleText[i] = solutionText[shuffleNum[i]];
@@ -77,69 +103,10 @@ public class GameModel {
 		return true;
 	}
 	
-	private void swapPosInArray(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
-		System.out.println(dimen + " " + zeroY + " " + zeroX + " " + clickedY + " " + clickedX);
-		System.out.println((zeroY * dimen + zeroX) + " " + (clickedY * dimen + clickedX));
-		if (isNum) {
-			for (int i = 0; i < shuffleNum.length; i++) {
-				System.out.print(shuffleNum[i] + " ");
-			}
-			shuffleNum[zeroY * dimen + zeroX] = shuffleNum[clickedY * dimen + clickedX];
-			shuffleNum[clickedY * dimen + clickedX] = 0;
-		}
-		else {
-			for (int i = 0; i < shuffleText.length; i++) {
-				System.out.print(shuffleText[i] + " ");
-			}
-			shuffleText[zeroY * dimen + zeroX] = shuffleText[clickedY * dimen + clickedX];
-			shuffleText[clickedY * dimen + clickedX] = 0;
-		}
-//		for (int i = 0; i < shuffleText.length; i++) {
-//			System.out.print(shuffleText[i] + " ");
-//		}
-	}
-	
-	private int countPoints(boolean isNum, int dimen, int zeroY, int zeroX, int clickedY, int clickedX) {
-		if (isNum) {
-			if ((shuffleNum[zeroY * dimen + zeroX] == solutionNum[zeroY * dimen + zeroX])
-					|| (shuffleNum[clickedY * dimen + clickedX] == solutionNum[clickedY * dimen + clickedX])) {
-				points += 1;
-				System.out.println("POINTS= " + points);
-			}
-			if (shuffleNum == solutionNum) {
-				return GameApp.WIN;
-			}
-		}
-		else {
-			if ((shuffleText[zeroY * dimen + zeroX] == solutionText[zeroY * dimen + zeroX])
-					|| (shuffleText[clickedY * dimen + clickedX] == solutionText[clickedY * dimen + clickedX])) {
-				points += 1;
-				System.out.println("POINTS= " + points);
-			}
-			if (shuffleText == solutionText) {
-				return GameApp.WIN;
-			}
-		}
-		return points;
-	}
-	
 	/**
-	 * Shuffle numbers and assigned it to shuffleNum[]
-	 * @param size size of whole grids (dim^2)
+	 * calculate solution for number array
+	 * @param dim dimension selected by users
 	 */
-	private void shuffle(int size) {
-		System.out.println(size);
-		treeSet = new LinkedHashSet<>();
-		while (treeSet.size() != size) {
-	      int random = (int) (Math.random() * size);
-	      treeSet.add(random);
-	    }
-		shuffleNum = treeSet.toArray(new Integer[treeSet.size()]);
-		for (int i = 0; i < shuffleNum.length; i++) {
-			System.out.print(shuffleNum[i] + " ");
-		}
-	}
-	
 	public void calSolutionNum(int dim) {
 		int size = dim * dim; 
 		treeSet = new LinkedHashSet<>();
@@ -150,12 +117,12 @@ public class GameModel {
 			treeSet.add(i);
 		}
 		solutionNum = treeSet.toArray(new Integer[treeSet.size()]);
-		for (int i = 0; i < size; i++) {
-			System.out.print(solutionNum[i] + " ");
-		}
-		System.out.println();
 	}
 	
+	/**
+	 * calculate solution for text array
+	 * @param dim dimension selected by users
+	 */
 	public void calSolutionText(String text, int dim) {
 		ArrayList<Character> chars = new ArrayList<>();
 		int i;

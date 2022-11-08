@@ -1,17 +1,13 @@
 package game;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 /**
- * Purpose: This class is to store all of the GUI components and anything that relates to the interface of the game
- * File name: GameView.java
+ * Purpose: This class is to store Game Icon
+ * File name: GameIcon.java
  * Course: CST8221 JAP, Lab Section: 301
  * Date: 2 Oct 2022
  * Prof: Paulo Sousa
@@ -30,15 +26,25 @@ import javax.swing.Timer;
  */
 public class GameIcon  extends JFrame {
 	
+	/**
+	 * Serial UID for GameIcon
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * image path for icons
+	 */
 	private String imgPath = "";
 	
+	/**
+	 * overloading constructor
+	 * @param status icon status ("default": default game icon, "finished": finished game icon, "win": win game icon, "lose": lose game icon)
+	 */
 	public GameIcon(String status) {
 		switch (status) {
 		case GameApp.WIN_ICON:
 			imgPath = "resources/GameWin.png";
 			break;
-		case "finished":
-			System.out.println("Finished");
+		case GameApp.FINISHED_ICON:
 			imgPath = "resources/GameFinished.png";
 			break;
 		case GameApp.LOSE_ICON:
@@ -52,9 +58,10 @@ public class GameIcon  extends JFrame {
 		icon.setIcon(new ImageIcon(getClass().getClassLoader().getResource(imgPath)));
 		panel.add(icon);
 		this.add(panel);
-		this.setTitle("WELCOME TO NUMPUZ");
+		this.setTitle("Game Icon");
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setVisible(true);
+		this.setResizable(false);
 		this.setSize(600, 600);
 	}
 }

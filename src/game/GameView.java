@@ -56,6 +56,9 @@ import javax.swing.border.Border;
  * @since 4.21.0
  */
 public class GameView  extends JFrame {
+	/**
+	 * Serial UID for GameView
+	 */
 	private static final long serialVersionUID = 1L;
 	/**
 	 * Fixed height for num grid
@@ -70,11 +73,11 @@ public class GameView  extends JFrame {
 	 */
 	private final static int GRID_SIZE = 700;
 	/**
-	 * GameController in GameView
+	 * controller object in GameView
 	 */
 	private GameController controller;
 	/**
-	 * GameModel in GameView
+	 * model object in GameView
 	 */
 	private GameModel model;
 	/**
@@ -110,7 +113,7 @@ public class GameView  extends JFrame {
 	 */
 	private JPanel textInput;
 	/**
-	 * Different buttons for different functionalities
+	 * Labels for text
 	 */
 	private JLabel textLabel;
 	/**
@@ -122,7 +125,7 @@ public class GameView  extends JFrame {
 	 */
 	private JButton save, load, stop, display;
 	/**
-	 * Buttons to design and play game
+	 * Radio buttons to design and play game
 	 */
 	private JRadioButton design, play;
 	/**
@@ -134,11 +137,11 @@ public class GameView  extends JFrame {
 	 */
 	private JComboBox<String> format;
 	/**
-	 * Drop down for type
+	 * Drop down for level
 	 */
 	private JComboBox<String> level;
 	/**
-	 * Text field for point and timer
+	 * Text field for point and timer and text field
 	 */
 	private JTextField point, timer, textField;
 	/**
@@ -150,21 +153,21 @@ public class GameView  extends JFrame {
 	 */
 	private Border border = BorderFactory.createLineBorder(Color.BLACK); // for functions box
 	/**
-	 * border object to set border for JPanel
+	 * grid bag constraints for GridBagLayout layout
 	 */
 	private GridBagConstraints gbc;
 	/**
-	 * Shuffle array to store integer that have been shuffled
-	 */
-	protected Integer[] shuffle;
-	/**
 	 * 2D array of JButton for grids
 	 */
-	protected JButton[][] matrix = null;
+	private JButton[][] matrix = null;
 	/**
-	 * Dimension of the grid
+	 * Old dimension
 	 */
-	protected int seconds = 0;
+	private int oldDim;
+	/**
+	 * Seconds for timer task
+	 */
+	private int seconds = 0;
 	/**
 	 * Check if timer is running
 	 */
@@ -172,52 +175,57 @@ public class GameView  extends JFrame {
 	/**
 	 * Timer
 	 */
-	protected Timer gameTimer = new Timer();
+	private Timer gameTimer = new Timer();
 	/**
 	 * Timer Task
 	 */
-	protected TimerTask timerTask;
-	/**
-	 * Old dimension
-	 */
-	private int oldDim;
+	private TimerTask timerTask;
 	
 	//Getter methods
+	//Function panel
 	public JPanel getGame() { return gamePanel; }
-	public JPanel getFunction() { return functionPanel; }
 	public JPanel getGrids() { return grids; }
 	public JPanel getTextInput() { return textInput; }
 	public JButton getSave() { return save; }
 	public JButton getLoad() { return load; }
 	public JButton getStop() { return stop; }
 	public JButton getDisplay() { return display; }
-	public JMenuItem getNewGame() { return newGame; }
-	public JMenuItem getSolution() { return solutions; }
-	public JMenuItem getExit() { return exit; }
-	public JMenuItem getAbout() { return about; }
-	public JMenuItem getColor() { return color; }
-	public JRadioButton getPlay() { return play; }
-	public JRadioButton getDesign() { return design; }
 	public JComboBox<Integer> getDim() { return dim; }
 	public JComboBox<String> getFormat() { return format; }
 	public JComboBox<String> getLevel() { return level; }
 	public JTextField getPoint() { return point; }
 	public JTextField getTimer() { return timer; }
+	//JMenuItems
+	public JMenuItem getNewGame() { return newGame; }
+	public JMenuItem getSolution() { return solutions; }
+	public JMenuItem getExit() { return exit; }
+	public JMenuItem getAbout() { return about; }
+	public JMenuItem getColor() { return color; }
+	//Mode
+	public JRadioButton getPlay() { return play; }
+	public JRadioButton getDesign() { return design; }
+	//Text field
 	public JTextField getTextField() { return textField; }
 	public JTextArea getDetail() { return detail; }
+	//Matrix
 	public JButton[][] getMatrix() { return matrix; }
 	public JButton getMatrixButton(int row, int col) { return matrix[row][col]; }
 	
-	//Setter methods
-	public void setPoint(JTextField point) { this.point = point; }
-	public void setTextField(JTextField textField) { this.textField = textField; }
+	//Setter for controller and model methods
 	public void setController(GameController controller) { this.controller = controller; }
 	public void setModel(GameModel model) { this.model = model; }
 	
+	/**
+	 * Overloading constructor
+	 * @param model model object
+	 */
 	public GameView(GameModel model) {
 		this.model = model;
 	}
 	
+	/**
+	 * Init functions to set components after controller is initiated
+	 */
 	public void initComponents() {
 		this.add(gamePanel());
 		this.setJMenuBar(menuBar());
@@ -230,6 +238,10 @@ public class GameView  extends JFrame {
 		this.setSize(WIDTH, HEIGHT);
 	}
 	
+	/**
+	 * create game panel
+	 * @return game panel
+	 */
 	public JPanel gamePanel() {
 		//add content to main JPanel
 		gamePanel = new JPanel(new BorderLayout());
@@ -238,6 +250,9 @@ public class GameView  extends JFrame {
 		return gamePanel;
 	}
 	
+	/**
+	 * start timer and display timer on GUI
+	 */
 	public void startTimer() {
 		seconds = 0;
 		// Timer task
@@ -262,34 +277,42 @@ public class GameView  extends JFrame {
 		}
 	}
 	
+	/**
+	 * pause timer
+	 */
 	public void timerPause() {
 		timerTask.cancel();
 		timerRunning = false;
 	}
 	
-	public void resetTimer(int seconds) {
+	/**
+	 * reset timer
+	 * @param seconds seconds that timer should be reset to
+	 */
+	private void resetTimer(int seconds) {
 		timer.setText(Integer.toString(seconds));
 	}
 	
 	/**
 	 * Store all components that make up the menu bar panel (game, help)
-	 * @return JPanel of all tabs
+	 * @return JPanel of menu bar JPanel
 	 */
 	public JMenuBar menuBar() {
+		// Game Menu
 		menuBar = new JMenuBar();
 		gameMenu = new JMenu("Game");
 		gameMenu.setMnemonic('G');
-		
+		// New Game Menu Item
 		newGame = new JMenuItem("New Game", new ImageIcon(getClass().getClassLoader().getResource("resources/IconNewGame.png")));
 		newGame.setActionCommand("New Game");
 		newGame.setMnemonic('N');
 		newGame.addActionListener(controller);
-		
+		// Solution Menu Item
 		solutions = new JMenuItem("Solution", new ImageIcon(getClass().getClassLoader().getResource("resources/IconSol.png")));
 		solutions.setActionCommand("Solution");
 		solutions.setMnemonic('S');
 		solutions.addActionListener(controller);
-		
+		// Exit Menu Item
 		exit = new JMenuItem("Exit", new ImageIcon(getClass().getClassLoader().getResource("resources/IconExit.png")));
 		exit.setActionCommand("Exit");
 		exit.setMnemonic('E');
@@ -300,13 +323,15 @@ public class GameView  extends JFrame {
 		gameMenu.add(exit);
 		gameMenu.addActionListener(controller);
 		
+		// Help Menu
 		helpMenu = new JMenu("Help");
 		helpMenu.setMnemonic('H');
+		// About Menu Item
 		about = new JMenuItem("About", new ImageIcon(getClass().getClassLoader().getResource("resources/IconAbout.png")));
 		about.setActionCommand("About");
 		about.setMnemonic('A');
 		about.addActionListener(controller);
-		
+		// Color Menu Item
 		color = new JMenuItem("Color", new ImageIcon(getClass().getClassLoader().getResource("resources/IconColor.png")));
 		color.setActionCommand("Color");
 		color.setMnemonic('C');
@@ -320,15 +345,19 @@ public class GameView  extends JFrame {
 		return menuBar;
 	}
 	
+	/**
+	 * Grid Panel that stores the 2D matrix buttons
+	 * @return gridPanel grid panel
+	 */
 	private JPanel gridPanel() {
 		gridPanel = new JPanel(new BorderLayout());
-		resetGrid(GameApp.DEFAULT_DIM, 0); //add grids to grid panel
+		resetGrid(GameApp.DEFAULT_DIM, 0);
 		return gridPanel;
 	}
 	
 	/**
 	 * Store all components that make up the function panel
-	 * @return JPanel of all tabs
+	 * @return JPanel all components that are contained in function panel
 	 */
 	private JPanel functionPlay() {
 		// functions panel initialization
@@ -360,24 +389,24 @@ public class GameView  extends JFrame {
 		support2.setLayout(new GridBagLayout());
 		Integer dimen[] = {3,4,5,6};
 		String input[] = {"Number", "Text"};
-		String levels[] = {"Classic", "Easy", "Medium", "Hard"};
+//		String levels[] = {"Classic", "Easy", "Medium", "Hard"};
 		dim = new JComboBox<Integer>(dimen);
 		dim.addActionListener(controller);
 		format = new JComboBox<String>(input);
 		format.addActionListener(controller);
-		level = new JComboBox<String>(levels);
-		level.addActionListener(controller);
+//		level = new JComboBox<String>(levels);
+//		level.addActionListener(controller);
 		dim.setSelectedIndex(0);
 		format.setSelectedIndex(0);
-		level.setSelectedIndex(0);
+//		level.setSelectedIndex(0);
 		compConfig(new JLabel("<html><font size=\"4\"><b>DIMENSION:</b></font></html>"), support2, 0, 0, 1, gbc.insets);
 		compConfig(dim, support2, 1, 0, 1, gbc.insets);
 		compConfig(new JLabel("<html><font size=\"4\"><b>TYPE:</b></font></html>"), support2, 0, 1, 1, gbc.insets);
 		compConfig(format, support2, 1, 1, 1, gbc.insets);
-		compConfig(new JLabel("<html><font size=\"4\"><b>LEVEL:</b></font></html>"), support2, 0, 2, 1, gbc.insets);
-		compConfig(level, support2, 1, 2, 1, gbc.insets);
+//		compConfig(new JLabel("<html><font size=\"4\"><b>LEVEL:</b></font></html>"), support2, 0, 2, 1, gbc.insets);
+//		compConfig(level, support2, 1, 2, 1, gbc.insets);
 		
-	    // support 3: show and hide solution
+	    // support 3: display grids
 		support3 = new JPanel();
 		support3.setLayout(new GridLayout());
 		display = new JButton("DISPLAY");
@@ -442,12 +471,11 @@ public class GameView  extends JFrame {
 	/**
 	 * Set up size and position for a component
 	 * @param comp Component needs to be attached to Panel
-	 * @param panel Panel
+	 * @param panel parent panel
 	 * @param x x-coordinate of Component
 	 * @param y y-coordinate of Component
 	 * @param w width of the grid
 	 * @param insets Insets for Component
-	 * @return void
 	 */
 	private void compConfig(Component comp, JPanel panel, int x, int y, int w, Insets insets) {
 	    gbc = new GridBagConstraints();
@@ -460,15 +488,17 @@ public class GameView  extends JFrame {
 	}
 	
 	/**
-	 * Reset whole grid when Start button is clicked
+	 * Reset whole grid depending on state, calling initializeNewGrid() method
+	 * @param newDim new dimension selected by users
+	 * @param state 0: reset empty buttons, 1: reset solution, 2: reset shuffled buttons
 	 */
 	public void resetGrid(int newDim, int state) {
-		//Set the whole grid again
+		// initialize new matrix and grid panel
 		matrix = new JButton[newDim][newDim];
 		grids = new JPanel(new GridLayout(newDim, newDim));
 		grids.setPreferredSize(new Dimension(GRID_SIZE, GRID_SIZE));
 		
-		if (state == 0) {
+		if (state == GameApp.STATE_EMPTY) {
 			oldDim = newDim;
 			setTextOrInitialGrid();
 		}
@@ -479,27 +509,30 @@ public class GameView  extends JFrame {
 	}
 	
 	/**
-	 * After remove the old grids, initialize new grid depends on model shuffle number
+	 * Initialize new grid (numbers, text) depending on state
+	 * @param newDim new dimension selected by users
+	 * @param state 0: reset empty buttons, 1: reset solution, 2: reset shuffled buttons
 	 */
 	private void initializeNewGrid(int newDim, int state) {
 		Integer[] tempArrayNum;
 		Character[] tempArrayText;
+		//Numbers
 		if (isTypeNum()) {
-			if (state == 1) {
+			if (state == GameApp.STATE_SOLUTION) {
 				System.out.println("Print solution");
 				tempArrayNum = model.getSolNum();
-			}
-			else {
+			} else {
 				System.out.println("Calling initializeNewGridNum");
 				tempArrayNum = model.getShuffleNum();
 			}
 			initializeNewGridNum(newDim, tempArrayNum);
-		} else {
-			if (state == 1) {
+		} 
+		//Text
+		else {
+			if (state == GameApp.STATE_SOLUTION) {
 				System.out.println("Print solution");
 				tempArrayText = model.getSolText();
-			}
-			else {
+			} else {
 				System.out.println("Calling initializeNewGridText");
 				tempArrayText = model.getShuffleText();
 			}
@@ -507,8 +540,14 @@ public class GameView  extends JFrame {
 		}
 	}
 		
+	/**
+	 * Initialize new grid for text
+	 * @param newDim new dimension selected by users
+	 * @param tempArray temporary shuffled text array received by calling function
+	 */
 	private void initializeNewGridText(int newDim, Character[] tempArray) {
 		System.out.println("initializeNewGridText");
+		// if color is not chosen, white will be used
 		if (GameController.bgColor == null) {
 			GameController.bgColor = GameApp.DEFAULT_COLOR;
 		}
@@ -536,8 +575,14 @@ public class GameView  extends JFrame {
 		}
 	}
 	
+	/**
+	 * Initialize new grid for numbers
+	 * @param newDim new dimension selected by users
+	 * @param tempArray temporary shuffled number array received by calling function
+	 */
 	private void initializeNewGridNum(int newDim, Integer[] tempArray) {
 		System.out.println("initializeNewGridNum");
+		// if color is not chosen, white will be used
 		if (GameController.bgColor == null) {
 			GameController.bgColor = GameApp.DEFAULT_COLOR;
 		}
@@ -565,7 +610,36 @@ public class GameView  extends JFrame {
 			}
 		}
 	}
+	/**
+	 * Set empty grid for the initial load
+	 */
+	private void setTextOrInitialGrid() {
+		if (GameController.bgColor == null) {
+			GameController.bgColor = GameApp.DEFAULT_COLOR;
+		}
+		for (int i = 0; i < oldDim; i++) {
+			for (int j = 0; j < oldDim; j++) {
+				matrix[i][j] = new JButton("");
+				matrix[i][j].setBackground(GameController.bgColor);
+				grids.add(matrix[i][j]);
+			}
+		}
+	}
 	
+	/**
+	 * Display text input when text type is selected
+	 * @return void
+	 */
+	public void displayTextInput() {
+		textInput.add(textLabel);
+		textInput.add(textField);
+		gridPanel.add(textInput, BorderLayout.SOUTH);
+	}
+	
+	/**
+	 * remove old grid and text input
+	 * @param newDim new dimension selected by users
+	 */
 	public void removeOldGrid(int newDim) {
 		//Remove old matrix
 		for (int i = 0; i < oldDim; i++) {
@@ -574,7 +648,7 @@ public class GameView  extends JFrame {
 				gridPanel.remove(grids);
 			}
 		}
-		//Remove old text input if text input
+		//Remove old text input
 		System.out.println("Remove old Grid");
 		textInput.remove(textLabel);
 		textInput.remove(textField);
@@ -601,31 +675,5 @@ public class GameView  extends JFrame {
 	public boolean isTypeNum() {
 		boolean isNum = format.getSelectedItem().equals("Number") ? true : false;
 		return isNum;
-	}
-	
-	/**
-	 * Set empty grid for the initial load
-	 */
-	private void setTextOrInitialGrid() {
-		if (GameController.bgColor == null) {
-			GameController.bgColor = GameApp.DEFAULT_COLOR;
-		}
-		for (int i = 0; i < oldDim; i++) {
-			for (int j = 0; j < oldDim; j++) {
-				matrix[i][j] = new JButton("");
-				matrix[i][j].setBackground(GameController.bgColor);
-				grids.add(matrix[i][j]);
-			}
-		}
-	}
-	
-	/**
-	 * Display text input when text type is selected
-	 * @return void
-	 */
-	public void displayTextInput() {
-		textInput.add(textLabel);
-		textInput.add(textField);
-		gridPanel.add(textInput, BorderLayout.SOUTH);
 	}
 }
