@@ -47,13 +47,26 @@ public class GameModel {
 	 */
 	private LinkedHashSet<Integer> treeSet;
 	
-//	public int getPoints() { return points; }
-//	public void setPoints(int points) { this.points = points; }
-	
 	//getters
+	/**
+	 * getter for shuffle number array
+	 * @return an array o shuffled number
+	 */
 	public Integer[] getShuffleNum() { return shuffleNum; }
+	/**
+	 * getter for shuffle text array
+	 * @return an array of shuffled chars
+	 */
 	public Character[] getShuffleText() { return shuffleText; }
+	/**
+	 * getter for solution number array
+	 * @return solution number array
+	 */
 	public Integer[] getSolNum() { return solutionNum; }
+	/**
+	 * getter for solution text array
+	 * @return solution text array
+	 */
 	public Character[] getSolText() { return solutionText; }
 	
 	/**
@@ -61,16 +74,12 @@ public class GameModel {
 	 * @param size size of whole grids (dim^2)
 	 */
 	private void shuffle(int size) {
-		System.out.println(size);
 		treeSet = new LinkedHashSet<>();
 		while (treeSet.size() != size) {
 			int random = (int) (Math.random() * size);
 			treeSet.add(random);
 		}
 		shuffleNum = treeSet.toArray(new Integer[treeSet.size()]);
-		for (int i = 0; i < shuffleNum.length; i++) {
-			System.out.print(shuffleNum[i] + " ");
-		}
 	}
 
 	/**
@@ -84,9 +93,10 @@ public class GameModel {
 	
 	/**
 	 * Shuffle the text using shuffled array of shuffleNum[] to assign back to shuffleText[]
-	 * @param size size of grid
+	 * @param text text input entered by users
+	 * @param dim grid dimension selected by users
 	 */
-	public boolean shuffleText(String text, int dim) {
+	public void shuffleText(String text, int dim) {
 		int size = dim * dim;
 		
 		shuffle(size);
@@ -95,12 +105,6 @@ public class GameModel {
 		for (int i = 0; i < size; i++) {
 			shuffleText[i] = solutionText[shuffleNum[i]];
 		}		
-		//delete
-		System.out.println("\nSize of shuffleText character array: " + size);
-		for (int i = 0; i < shuffleText.length; i++) {
-			System.out.print("["+shuffleText[i]+"]");
-		}
-		return true;
 	}
 	
 	/**
@@ -121,6 +125,7 @@ public class GameModel {
 	
 	/**
 	 * calculate solution for text array
+	 * @param text text entered by users from view
 	 * @param dim dimension selected by users
 	 */
 	public void calSolutionText(String text, int dim) {
@@ -131,10 +136,5 @@ public class GameModel {
         }
 		chars.add('0');
 		solutionText = chars.toArray(new Character[chars.size()]);
-		
-		//delete
-		for (i = 0; i < solutionText.length; i++) {
-			System.out.print("["+solutionText[i]+"]" + " ");
-		}
 	}
 }
