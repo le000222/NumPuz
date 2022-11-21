@@ -1,8 +1,14 @@
 package game;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.awt.Color;
+import java.util.ArrayList;
 import java.util.prefs.Preferences;
 import java.awt.event.MouseListener;
 
@@ -60,6 +66,10 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	 */
 	private boolean gameWin = false;
 	/**
+	 * boolean to check if array has been shuffled
+	 */
+	private boolean arrayShuffle = false;
+	/**
 	 * points calculated by controller
 	 */
 	private int points = 0;
@@ -68,6 +78,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	 * @return true if game is running, false if not
 	 */
 	public boolean getGameRunning() { return gameIsRunning; }
+	
 	/**
 	 * default constructor
 	 */
@@ -90,8 +101,19 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		// load configuration button is clicked
+		if (e.getSource() == view.getLoad()) {
+			arrayShuffle = true;
+			loadGameConfig(); 
+			return;
+		}
+		// save configuration button is clicked
+		else if (e.getSource() == view.getSave()) { 
+			saveGameConfig(); 
+			return; 
+		}
 		//JMenuItems exit
-		if (e.getSource() == view.getExit()) {
+		else if (e.getSource() == view.getExit()) {
 			if (JOptionPane.showConfirmDialog(null, "Are you sure to quit the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				System.exit(0);
 			}
@@ -117,7 +139,6 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			return;
 		}
 		
-		//Play/Design Mode
 		//type text is selected
 		if (!gameIsRunning && view.getFormat().getSelectedItem().equals("Text")) { actionSetText(); }
 
@@ -133,13 +154,16 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			view.getStop().setEnabled(true);
 			view.getPoint().setEnabled(false);
 			view.getTimer().setEnabled(false);
+			view.getRand().setEnabled(false);
 			gameIsRunning = true;
 			if(!view.timerRunning) {
 				view.startTimer();
 			}
-			// shuffle array
-			if (view.isTypeNum()) { actionNumShuffle(); }
-			else if (!view.isTypeNum()) { actionTextShuffle(); }
+			if (!arrayShuffle) {
+				// shuffle array
+				if (view.isTypeNum()) { actionNumShuffle(); }
+				else if (!view.isTypeNum()) { actionTextShuffle(); }
+			}
 		}
 		// design mode is clicked or selected
 		else if (e.getSource() == view.getDesign() || view.getDesign().isSelected()) {
@@ -153,6 +177,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 			view.getStop().setEnabled(false);
 			view.getPoint().setEnabled(false);
 			view.getTimer().setEnabled(false);
+			view.getRand().setEnabled(true);
 			// calculate solution number array
 			model.calSolutionNum(view.getDimension());
 			// display number or text in right order in the grid
@@ -160,13 +185,17 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 				if (view.isTypeNum()) { actionNumDisplay(); }
 				else if (!view.isTypeNum()) { actionTextDisplay(); }
 			}
+			// random number
+			else if (e.getSource() == view.getRand()) {
+				// shuffle array
+				if (view.isTypeNum()) { actionNumShuffle(); }
+				else if (!view.isTypeNum()) { actionTextShuffle(); }
+				arrayShuffle = true;
+			}
 		}
-		// load configuration button is clicked
-		if (e.getSource() == view.getLoad()) { loadGameConfig(); }
-		// save configuration button is clicked
-		else if (e.getSource() == view.getSave()) { saveGameConfig(); }
+		
 		// stop button is clicked to pause and restart the game
-		else if (e.getSource() == view.getStop()) {
+		if (e.getSource() == view.getStop()) {
 			if (JOptionPane.showConfirmDialog(null, "Stop and restart the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				gameIsRunning = false;
 				view.timerPause();
@@ -203,6 +232,7 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 				view.timerPause();
 				printSolution();
 				view.getDesign().setSelected(true);
+				view.getDesign().doClick();
 				view.getPlay().setEnabled(false);
 				view.getSave().setEnabled(false);
 				view.getLoad().setEnabled(false);
@@ -217,6 +247,31 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 	
 	private void hint() {
 		JOptionPane.showMessageDialog(null, "You can start a new game by selecting \"New Game\" in menu bar");
+	}
+	
+	/**
+	 * design new game for the grid
+	 */
+	private void designNewGame() {
+		view.getFormat().setSelectedIndex(0);
+		view.getDesign().setSelected(true);
+		view.getDesign().setEnabled(false);
+		view.getPlay().setEnabled(true);
+		view.getSave().setEnabled(true);
+		view.getLoad().setEnabled(true);
+		view.getPlay().setEnabled(true);
+		view.getDim().setEnabled(true);
+		view.getPoint().setEnabled(false);
+		view.getTimer().setEnabled(false);
+		view.getDisplay().setEnabled(true);
+		view.getFormat().setEnabled(true);
+		view.getRand().setEnabled(true);
+		view.getDesign().doClick();
+		view.getPoint().setText("0");
+		view.getDetail().setText("");
+		view.getTimer().setText("0");
+		view.removeOldGrid(view.getDimension());
+		view.resetGrid(view.getDimension(), 0);
 	}
 	
 	/**
@@ -413,7 +468,37 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		int result = fileChooser.showSaveDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
 		    File selectedFile = fileChooser.getSelectedFile();
-		    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+		    
+	        try (FileWriter fw = new FileWriter(selectedFile)) {
+	        	for (int i = 0; i < 3; i++) {
+					if (i == 0) {
+						System.out.println(view.getDimension());
+						fw.write(view.getDimension() + "\n");
+					}
+					else if (i == 1) {
+						if (view.isTypeNum()) {
+							fw.append("Number"+ "\n");
+						} else {
+							fw.append("Text"+ "\n");
+						}
+					}
+					else {
+						int dimen = view.getDimension();
+						String text = "";
+						for (int j = 0; j < dimen*dimen; j++) {
+							if (view.isTypeNum()) {
+								text += model.getShuffleNum()[j] + " ";
+							} else {
+								text += model.getShuffleText()[j] + "";
+							}
+						}
+						fw.append(text);
+					}
+	        	}
+	        	fw.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
 		}
 	}
 
@@ -425,38 +510,69 @@ public class GameController extends AbstractAction implements ActionListener, Mo
 		String path = pref.get("DEFAULT_PATH", "");
 		
 		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		fileChooser.setCurrentDirectory(new File(path));
 		
 		int result = fileChooser.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
 		    File selectedFile = fileChooser.getSelectedFile();
 		    System.out.println("Selected file: " + selectedFile.getAbsolutePath());
+		    try {
+		    	BufferedReader br = new BufferedReader(new FileReader(selectedFile));
+				int lineNum = 0;
+				int dimen = 0;
+				ArrayList<Integer> tempNum = null;
+				ArrayList<Character> tempText = null;
+				for (String line; (line = br.readLine()) != null; lineNum++) {
+					switch (lineNum) {
+					case 0:
+						dimen = Integer.parseInt(line);
+						view.getDim().setSelectedIndex(Integer.parseInt(line)-3);
+						break;
+					case 1:
+						if (line.equals("Number")) {
+							view.getFormat().setSelectedIndex(0);
+							tempNum = new ArrayList<>();
+						}
+						else {
+							view.getFormat().setSelectedIndex(1);
+							tempText = new ArrayList<>();
+						}
+						break;
+					case 2:
+						String[] matrix = line.split(" ");
+						for (int i = 0; i < dimen*dimen; i++) {
+							if (view.isTypeNum()) {
+								tempNum.add(Integer.parseInt(matrix[i]));
+							} else {
+								System.out.println(line.charAt(i));
+								tempText.add(line.charAt(i));
+							}
+						}
+						break;
+					}
+				}
+				for (Character i : tempText) {
+					System.out.print(i);
+				}
+				if (view.isTypeNum()) {
+					model.setShuffleNum(tempNum.toArray(new Integer[tempNum.size()]));
+				} else {
+					model.setShuffleText(tempText.toArray(new Character[tempText.size()]));
+				}
+//				for (int i = 0; i < model.getShuffleNum().length; i++) {
+//					System.out.print(model.getShuffleNum()[i] + " ");
+//				}
+				System.out.println(dimen);
+				view.removeOldGrid(dimen);
+				view.resetGrid(dimen, 2);
+				br.close();
+			} catch (FileNotFoundException e) {
+				System.out.println("File cannot be found.");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
-	}
-	
-	/**
-	 * design new game for the grid
-	 */
-	private void designNewGame() {
-		view.getFormat().setSelectedIndex(0);
-		view.getDesign().setSelected(true);
-		view.getDesign().setEnabled(false);
-		view.getPlay().setEnabled(true);
-		view.getSave().setEnabled(true);
-		view.getLoad().setEnabled(true);
-		view.getPlay().setEnabled(true);
-		view.getDim().setEnabled(true);
-		view.getPoint().setEnabled(false);
-		view.getTimer().setEnabled(false);
-		view.getDisplay().setEnabled(true);
-		view.getFormat().setEnabled(true);
-		view.getDesign().doClick();
-		view.getPoint().setText("0");
-		view.getDetail().setText("");
-		view.getTimer().setText("0");
-		view.removeOldGrid(view.getDimension());
-		view.resetGrid(view.getDimension(), 0);
 	}
 	
 	/**

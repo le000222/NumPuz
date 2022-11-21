@@ -1,5 +1,9 @@
 package game;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 /**
@@ -68,6 +72,16 @@ public class GameModel {
 	 * @return solution text array
 	 */
 	public Character[] getSolText() { return solutionText; }
+	/**
+	 * getter for shuffle number array
+	 * @return an array o shuffled number
+	 */
+	public void setShuffleNum(Integer[] shuffleNum) { this.shuffleNum = shuffleNum; }
+	/**
+	 * getter for shuffle text array
+	 * @return an array of shuffled chars
+	 */
+	public void setShuffleText(Character[] shuffleText) { this.shuffleText = shuffleText; }
 	
 	/**
 	 * Shuffle numbers and assigned it to shuffleNum[]
@@ -136,5 +150,9 @@ public class GameModel {
         }
 		chars.add('0');
 		solutionText = chars.toArray(new Character[chars.size()]);
+	}
+	
+	public void saveConfig() {
+		
 	}
 }

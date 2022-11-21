@@ -27,7 +27,6 @@ import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import java.util.Timer;
 import java.util.TimerTask;
-import javax.swing.border.Border;
 
 /**
  * Purpose: This class is to store all of the GUI components and anything that relates to the interface of the game
@@ -123,7 +122,7 @@ public class GameView  extends JFrame {
 	/**
 	 * Different buttons for different functionalities
 	 */
-	private JButton save, load, stop, display;
+	private JButton save, load, stop, display, rand;
 	/**
 	 * Radio buttons to design and play game
 	 */
@@ -145,10 +144,6 @@ public class GameView  extends JFrame {
 	 * Text Area to store details of current execution
 	 */
 	private JTextArea detail;
-	/**
-	 * border object to set border for JPanel
-	 */
-	private Border border = BorderFactory.createLineBorder(Color.BLACK); // for functions box
 	/**
 	 * grid bag constraints for GridBagLayout layout
 	 */
@@ -215,6 +210,11 @@ public class GameView  extends JFrame {
 	 * @return display button
 	 */
 	public JButton getDisplay() { return display; }
+	/**
+	 * getter for display button to display the design before playing
+	 * @return display button
+	 */
+	public JButton getRand() { return rand; }
 	/**
 	 * getter for selected dimension (3,4,5,6)
 	 * @return combobox for dimension
@@ -459,6 +459,7 @@ public class GameView  extends JFrame {
 		// functions panel initialization
 		functionPanel = new JPanel();
 		functionPanel.setLayout(new GridBagLayout());
+		functionPanel.setPreferredSize(new Dimension(255, HEIGHT));
 		gbc = new GridBagConstraints();
 		gbc.insets = new Insets(10, 10, 10, 5);
 		functionPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
@@ -500,14 +501,16 @@ public class GameView  extends JFrame {
 		support3 = new JPanel();
 		support3.setLayout(new GridLayout());
 		display = new JButton("DISPLAY");
+		rand = new JButton("RANDOM");
 		display.addActionListener(controller);
+		rand.addActionListener(controller);
 		support3.add(display);
+		support3.add(rand);
 	
 		// detail of current execution
 		detail = new JTextArea(12, 10);
 		detail.setLineWrap(true);
 		JScrollPane scrollPane = new JScrollPane(detail);
-		detail.setBorder(BorderFactory.createCompoundBorder(border, BorderFactory.createEmptyBorder(5, 5, 5, 5)));
 		
 		// support 4: point and timer
 		support4 = new JPanel();
@@ -538,7 +541,7 @@ public class GameView  extends JFrame {
 	    stop.addActionListener(controller);
 		
 	    // add supports to functions panel
-		gbc.insets = new Insets(5, 5, 5, 5);
+		gbc.insets = new Insets(5, 10, 5, 5);
 		compConfig(pic, functionPanel, 0, 0, 3, gbc.insets);
 		compConfig(support1, functionPanel, 0, 4, 3, gbc.insets);
 		compConfig(support2, functionPanel, 0, 5, 2, gbc.insets);
@@ -682,7 +685,7 @@ public class GameView  extends JFrame {
 				matrix[y][x].setOpaque(true);
 				matrix[y][x].setBorderPainted(true);
 				matrix[y][x].setForeground(GameApp.ZERO_COLOR);
-				matrix[y][x].setBorder(BorderFactory.createLineBorder(GameApp.ZERO_COLOR));
+				matrix[y][x].setBorder(BorderFactory.createLineBorder(GameController.bgColor));
 				matrix[y][x].addMouseListener(controller);
 				grids.add(matrix[y][x]);
 			}
@@ -704,6 +707,7 @@ public class GameView  extends JFrame {
 	private void setTextOrInitialGrid() {
 		if (GameController.bgColor == null) {
 			GameController.bgColor = GameApp.DEFAULT_COLOR;
+			System.out.println(GameController.bgColor);
 		}
 		for (int i = 0; i < oldDim; i++) {
 			for (int j = 0; j < oldDim; j++) {
