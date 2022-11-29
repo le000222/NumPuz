@@ -6,7 +6,9 @@ import javax.swing.Timer;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import java.awt.Color;
+
+import controller.MainController;
+import view.MainView;
 /**
  * File name: GameApp.java
  * Purpose: This class is the main class of the program
@@ -33,78 +35,29 @@ public class GameApp extends JFrame {
 	 * Serial UID for GameApp
 	 */
 	private static final long serialVersionUID = 1L;
-	/**
-	 * Static variable for default dimension
-	 */
-	public final static int DEFAULT_DIM = 3;
-	/**
-	 * Static string for default icon
-	 */
-	public final static String DEFAULT_ICON = "default";
-	/**
-	 * Static string for default win icon
-	 */
-	public final static String WIN_ICON = "win";
-	/**
-	 * Static string for default finsihed icon
-	 */
-	public final static String FINISHED_ICON = "finished";
-	/**
-	 * Static string for default lose icon
-	 */
-	public final static String LOSE_ICON = "lose";
-	/**
-	 * Static string for default win int
-	 */
-	public final static int WIN = -1;
-	/**
-	 * Static string for default white color
-	 */
-	public final static Color DEFAULT_COLOR = Color.WHITE;
-	/**
-	 * Static string for default black color for 0 button
-	 */
-	public final static Color ZERO_COLOR = Color.BLACK;
-	/**
-	 * State for empty buttons
-	 */
-	public final static int STATE_EMPTY = 0;
-	/**
-	 * State for solution buttons
-	 */
-	public final static int STATE_SOLUTION = 1;
-	/**
-	 * State for shuffled buttons
-	 */
-	public final static int STATE_SHUFFLE = 2;
-	/**
-	 * view object for GameView
-	 */
-	public GameView view;
-	/**
-	 * view model for GameModel
-	 */
-	public GameModel model;
-	/**
-	 * view controller for GameController
-	 */
-	public GameController controller;
 	
 	/**
-	 * Default constructor
+	 * main method
+	 * @param args arguments
 	 */
-	public GameApp() {
-		if (model == null) {
-			model = new GameModel();
+	public static void main(String[] args) {
+		try {
+			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (UnsupportedLookAndFeelException e) {
+			e.printStackTrace();
 		}
-		if (view == null) {
-			view = new GameView(model);
-			view.setModel(model);
-		}
-		if (controller == null) {
-			controller = new GameController(view, model);
-		}
-		view.initComponents();
+		GameIcon icon = new GameIcon(GameBasic.DEFAULT_ICON);
+		timer(1111);
+		icon.dispose();
+		MainView view = new MainView();
+		new MainController(view);
+		view.runMainView();
 	}
 	
 	/**
@@ -124,25 +77,4 @@ public class GameApp extends JFrame {
 		timer.stop();
 	}
 	
-	/**
-	 * main method
-	 * @param args arguments
-	 */
-	public static void main(String[] args) {
-		try {
-			UIManager.setLookAndFeel("com.sun.java.swing.plaf.windows.WindowsLookAndFeel");
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (UnsupportedLookAndFeelException e) {
-			e.printStackTrace();
-		}
-		GameIcon icon = new GameIcon(DEFAULT_ICON);
-		timer(1111);
-		icon.dispose();
-		new GameApp();
-	}
 }

@@ -41,28 +41,30 @@ public class GameIcon  extends JFrame {
 	 */
 	public GameIcon(String status) {
 		switch (status) {
-		case GameApp.WIN_ICON:
+		case GameBasic.WIN_ICON:
 			imgPath = "resources/GameWin.png";
 			break;
-		case GameApp.FINISHED_ICON:
+		case GameBasic.FINISHED_ICON:
 			imgPath = "resources/GameFinished.png";
 			break;
-		case GameApp.LOSE_ICON:
+		case GameBasic.LOSE_ICON:
 			imgPath = "resources/GameLose.png";
 			break;
 		default:
 			imgPath = "resources/GameIcon.png";
 		}
 		JPanel panel = new JPanel();
+		panel.setLayout(null);
 		JLabel icon = new JLabel();
 		icon.setIcon(new ImageIcon(getClass().getClassLoader().getResource(imgPath)));
+		icon.setBounds(15, 5, 500, 500);
 		panel.add(icon);
 		this.add(panel);
 		this.setTitle("Game Icon");
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setVisible(true);
 		this.setResizable(false);
-		this.setSize(600, 600);
+		this.setSize(550, 550);
 	}
 }
 ;
