@@ -15,6 +15,26 @@ import javax.swing.WindowConstants;
 import controller.ServerController;
 import game.GameBasic;
 
+/**
+ * Purpose: This class is to store GUI for server side
+ * File name: ServerView.java
+ * Course: CST8221 JAP, Lab Section: 301
+ * Date: 4 Dec 2022
+ * Prof: Paulo Sousa
+ * Assignment: A12
+ * Compiler: Eclipse IDE - 2021-09 (4.21.0)
+ * Identification [Ngoc Phuong Khanh Le, 041004318], [Dan McCue, 040772626]
+ */
+
+/**
+ * Class Name: ServerView.java
+ * Method list: getters, setters, runServerView, serverView
+ * Purpose: This class is store GUI for server side
+ * @author Ngoc Phuong Khanh Le, Dan McCue
+ * @version 3
+ * @see game
+ * @since 4.21.0
+ */
 public class ServerView extends JFrame {
 
 	/**
@@ -22,11 +42,11 @@ public class ServerView extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * Panel to store functionPanel and gridPanel
+	 * Frame for serverView
 	 */
 	private JFrame serverFrame;
 	/**
-	 * Panel to store functionPanel and gridPanel
+	 * Panel to store serverView
 	 */
 	private JPanel serverView;
 	/**
@@ -38,7 +58,7 @@ public class ServerView extends JFrame {
 	 */
 	private JCheckBox finalize;
 	/**
-	 * Text field for point and timer and text field
+	 * Text field for server's port
 	 */
 	private JTextField port;
 	/**
@@ -49,23 +69,55 @@ public class ServerView extends JFrame {
 	 * ServerController for ServerView
 	 */
 	private ServerController serverController;
+	/**
+	 * Getter for serverController
+	 * @return serverController received from serverController
+	 */
 	public ServerController getServerController() { return serverController; }
 	/**
 	 * Setter for serverContoller
-	 * @param controller
+	 * @param controller serverController object
 	 */
 	public void setServerController(ServerController controller) {
 		serverController = controller;
 	}
 	
 	//Getter
+	/**
+	 * Getters for server frame
+	 * @return serverFrame server's frame
+	 */
 	public JFrame getServerFrame() { return serverFrame; }
+	/**
+	 * Getters for start button
+	 * @return start start button
+	 */
 	public JButton getStart() { return start; }
+	/**
+	 * Getters for result button
+	 * @return result result button
+	 */
 	public JButton getResult() { return result; }
+	/**
+	 * Getters for end button
+	 * @return end end button
+	 */
 	public JButton getEnd() { return end; }
+	/**
+	 * Getters for finalize check box
+	 * @return finalize finalize check box
+	 */
+	public JCheckBox getFinalize() { return finalize; }
+	/**
+	 * Getters for port text field
+	 * @return port port text field
+	 */
 	public JTextField getPort() { return port; }
+	/**
+	 * Getters for detail text area
+	 * @return detail detail text area for current execution
+	 */
 	public JTextArea getDetail() { return detail; }
-	// Add getter for finalize later
 	
 	/**
 	 * Default constructor
@@ -85,6 +137,10 @@ public class ServerView extends JFrame {
 		serverFrame.setSize(900, 720);
 	}
 	
+	/**
+	 * server's view
+	 * @return panel for server view
+	 */
 	private JPanel serverView() {
 		serverView = new JPanel();
 		serverView.setLayout(null);

@@ -30,7 +30,7 @@ import java.awt.event.MouseEvent;
  * Purpose: This class is the controller of the game
  * File name: GameController.java
  * Course: CST8221 JAP, Lab Section: 301
- * Date: 2 Oct 2022
+ * Date: 4 Dec 2022
  * Prof: Paulo Sousa
  * Assignment: A12
  * Compiler: Eclipse IDE - 2021-09 (4.21.0)
@@ -39,8 +39,7 @@ import java.awt.event.MouseEvent;
 
 /**
  * Class Name: GameController.java
- * Method list: main()
- * Constants list: frame
+ * Method list: to many to write :)
  * Purpose: This class is the controller of the game
  * @author Ngoc Phuong Khanh Le, Dan McCue
  * @version 3
@@ -92,17 +91,7 @@ public class GameController implements ActionListener, MouseListener {
 	/**
 	 * Check if timer is running
 	 */
-	public boolean timerRunning = false; // CHANGE TO PRIVATE LATERR
-	/**
-	 * getter for game running
-	 * @return true if game is running, false if not
-	 */
-	public boolean getGameRunning() { return gameIsRunning; }
-	/**
-	 * getter for game running
-	 * @return true if game is running, false if not
-	 */
-	public boolean getArrayShuffle() { return isArrayShuffle; }
+	private boolean timerRunning = false;
 	/**
 	 * getter for game running
 	 * @return true if game is running, false if not
@@ -170,7 +159,7 @@ public class GameController implements ActionListener, MouseListener {
 		}
 		
 		//type text is selected
-		if (!gameIsRunning && gameView.getFormat().getSelectedItem().equals("Text")) { actionSetText(); }
+		if (gameView.getFormat().getSelectedItem().equals("Text") && !gameIsRunning && !isArrayShuffle) { actionSetText(); }
 
 		// play mode is clicked
 		if (e.getSource() == gameView.getPlay()) {
@@ -227,9 +216,10 @@ public class GameController implements ActionListener, MouseListener {
 		// stop button is clicked to pause and restart the game
 		if (e.getSource() == gameView.getStop()) {
 			if (JOptionPane.showConfirmDialog(null, "Stop and restart the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-				gameIsRunning = false;
 				timerPause();
+				gameIsRunning = false;
 				timerRunning = false;
+				isArrayShuffle = false;
 				gameView.getStop().setEnabled(false);
 				if (gameView.isTypeNum()) { gameModel.setShuffleNum(null); }
 				else if (!gameView.isTypeNum()) { gameModel.setShuffleText(null); }
@@ -245,6 +235,7 @@ public class GameController implements ActionListener, MouseListener {
 		else if (e.getSource() == gameView.getNewGame()) {
 			if (JOptionPane.showConfirmDialog(null, "Are you sure to restart the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				gameIsRunning = false;
+				isArrayShuffle = false;
 				designNewGame();
 			}
 			return;
@@ -261,6 +252,7 @@ public class GameController implements ActionListener, MouseListener {
 			}
 			if (JOptionPane.showConfirmDialog(null, "Are you sure to show solutions?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				gameIsRunning = false;
+				isArrayShuffle = false;
 				timerPause();
 				printSolution();
 				gameView.getDesign().setSelected(true);
@@ -279,6 +271,9 @@ public class GameController implements ActionListener, MouseListener {
 		}
 	}
 		
+	/**
+	 * show hint for users after they end a game
+	 */
 	private void hint() {
 		JOptionPane.showMessageDialog(null, "You can start a new game by selecting \"New Game\" in menu bar");
 	}
@@ -287,7 +282,8 @@ public class GameController implements ActionListener, MouseListener {
 	 * design new game for the grid
 	 */
 	private void designNewGame() {
-		gameIsRunning = true;
+		gameIsRunning = false;
+		isArrayShuffle = false;
 		gameView.getFormat().setSelectedIndex(0);
 		gameView.getDesign().setSelected(true);
 		gameView.getDesign().setEnabled(false);
@@ -477,14 +473,12 @@ public class GameController implements ActionListener, MouseListener {
 		for (int i = 0; i < dimen; i++) {
 			for (int j = 0; j < dimen; j++) {
 				if (isNum) {
-					if (Integer.parseInt(gameView.getMatrixButton(i, j).getText()) == gameModel.getSolNum()[i * dimen + j]) {
+					if (Integer.parseInt(gameView.getMatrixButton(i, j).getText()) == gameModel.getSolNum()[i * dimen + j])
 						correctBtn++;
-					}
 				}
 				else {
-					if (gameView.getMatrixButton(i, j).getText().equals(Character.toString(gameModel.getSolText()[i * dimen + j]))) {
+					if (gameView.getMatrixButton(i, j).getText().equals(Character.toString(gameModel.getSolText()[i * dimen + j])))
 						correctBtn++;
-					}
 				}
 			}
 		}
@@ -596,7 +590,6 @@ public class GameController implements ActionListener, MouseListener {
 						fw.append(text);
 					}
 	        	}
-	        	fw.close();
 	        } catch (IOException e) {
 	        	JOptionPane.showMessageDialog(null, e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
 	        }

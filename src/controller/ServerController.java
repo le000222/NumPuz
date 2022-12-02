@@ -8,35 +8,114 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
-import model.ServerReply;
+import model.ClientTask;
 import model.User;
 import view.ServerView;
 
+/**
+ * Purpose: This class is to store functionalities for server controller
+ * File name: ServerController.java
+ * Course: CST8221 JAP, Lab Section: 301
+ * Date: 4 Dec 2022
+ * Prof: Paulo Sousa
+ * Assignment: A32
+ * Compiler: Eclipse IDE - 2021-09 (4.21.0)
+ * Identification: [Ngoc Phuong Khanh Le, 041004318], [Dan McCue, 040772626]
+ */
+
+/**
+ * Class Name: ServerController.java
+ * Method list: getters, setters, startServer, endServer, showResults, displayExecution, displayErrorMessage
+ * Purpose: This class is to store all functionalities for ServerController
+ * @author Ngoc Phuong Khanh Le, Dan McCue
+ * @version 3
+ * @see game
+ * @since 4.21.0
+ */
 public class ServerController implements ActionListener {
+	/**
+	 * serverView object in ServerController
+	 */
 	private ServerView serverView;
+	/**
+	 * serverSocket object in ServerController
+	 */
 	private ServerSocket serverSocket;
+	/**
+	 * serverController object in ServerController
+	 */
 	private ServerController serverController;
+	/**
+	 * clientSocket object in ServerController
+	 */
 	private Socket clientSocket;
+	/**
+	 * id for each client
+	 */
 	private int nclient = 0;
+	/**
+	 * total number of clients
+	 */
 	private int nclients = 0;
+	/**
+	 * port of server
+	 */
 	private String port;
+	/**
+	 * userLists array lists to store all users
+	 */
 	private ArrayList<User> usersList = new ArrayList<>();
-	private ArrayList<ServerReply> clientsList = new ArrayList<>();
+	/**
+	 * clientsLists array lists to store all clients that implements tasks on server
+	 */
+	private ArrayList<ClientTask> clientTasks = new ArrayList<>();
+	/**
+	 * check if server is running or not
+	 */
 	private boolean runningServer = false;
+	/**
+	 * check if server is finalized or not
+	 */
+	private boolean isFinalized = false;
 	
-	public ArrayList<ServerReply> getServerReply() { return clientsList; }
+	//Getters
+	/**
+	 * Getter for getting each clientTask array list
+	 * @return clientTask
+	 */
+	public ArrayList<ClientTask> getClientTask() { return clientTasks; }
+	/**
+	 * Getter for getting usersList array list
+	 * @return
+	 */
 	public ArrayList<User> getUser() { return usersList; }
+	/**
+	 * Getter for finalize check box
+	 * @return isFinalized true: check box is checked, false: check box isnt checked
+	 */
+	public boolean getIsFinalized() { return isFinalized; }
 	
+	/**
+	 * Default constructor
+	 */
 	public ServerController() {}
 	
+	/**
+	 * Overloading constructor
+	 * @param serverView serverView object from ServerView
+	 */
 	public ServerController(ServerView serverView) {
 		serverController = new ServerController();
 		serverController.serverView = serverView;
 		serverView.setServerController(serverController);
 	}
 
+	/**
+	 * overloading method
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
+		// keep track of serverController to get access to right serverController while transfering between classes
 		serverController = serverView.getServerController();
 		port = serverView.getPort().getText();
 		if (e.getSource() == serverView.getStart()) {
@@ -57,16 +136,14 @@ public class ServerController implements ActionListener {
 			displayExecution("Results Button Pressed ...");
 			showResults();
 		}
+		else if (serverView.getFinalize().isSelected()) {
+			isFinalized = true;
+		}
 	}
 	
-	public void displayExecution(String message) {
-		serverView.getDetail().append(message + "\n");
-	}
-	
-	public void displayErrorMessage(String errorMessage, String title) {
-		JOptionPane.showMessageDialog(null, errorMessage, title, JOptionPane.ERROR_MESSAGE);
-	}
-	
+	/**
+	 * start server
+	 */
 	private void startServer() {
 		Runnable server = new Runnable() {
 			@Override
@@ -88,8 +165,8 @@ public class ServerController implements ActionListener {
 						usersList.add(user);
 						
 						displayExecution("New task [" + (nclient-1) + "] created...");
-						ServerReply serverReply = new ServerReply(clientSocket, nclient, nclients);
-						clientsList.add(serverReply);
+						ClientTask serverReply = new ClientTask(clientSocket, nclient, nclients);
+						clientTasks.add(serverReply);
 						serverReply.setServerController(serverController);
 						serverReply.start(); // invoke run() in ServerReply
 					}
@@ -105,13 +182,19 @@ public class ServerController implements ActionListener {
 		serverThread.start();
 	}
 	
+	/**
+	 * end server
+	 */
 	private void endServer() {
 		runningServer = false;
-		clientsList.clear();
+		clientTasks.clear();
 		serverView.getServerFrame().dispose();
 		System.exit(0);
 	}
 	
+	/**
+	 * print list of user
+	 */
 	private void showResults() {
 		StringBuilder sb = new StringBuilder("");
 		if (usersList.size() > 0) {
@@ -126,5 +209,22 @@ public class ServerController implements ActionListener {
 			sb.append("Empty List.");
 		}
 		JOptionPane.showMessageDialog(serverView, sb, "Users List", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	/**
+	 * display executions continuously after the others
+	 * @param message message to display
+	 */
+	public void displayExecution(String message) {
+		serverView.getDetail().append(message + "\n");
+	}
+	
+	/**
+	 * display error message
+	 * @param errorMessage error message from exceptions
+	 * @param title title for the error popup window
+	 */
+	public void displayErrorMessage(String errorMessage, String title) {
+		JOptionPane.showMessageDialog(null, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
 }

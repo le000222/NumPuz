@@ -2,6 +2,28 @@ package game;
 
 import java.awt.Color;
 
+/**
+ * Purpose: This class is to contain all constants using throughout the game
+ * File name: GameBasic.java
+ * Course: CST8221 JAP, Lab Section: 301
+ * Date: 4 Dec 2022
+ * Prof: Paulo Sousa
+ * Assignment: A12
+ * Compiler: Eclipse IDE - 2021-09 (4.21.0)
+ * Identification [Ngoc Phuong Khanh Le, 041004318], [Dan McCue, 040772626]
+ */
+
+/**
+ * Class Name: GameBasic.java
+ * Constants list: DEFAULT_DIM, DEFAULT_ICON, WIN_ICON, LOSE_ICON, WIN, DEFAULT_COLOR, ZERO_COLOR, DEFAULT_GAMECONFIG, IS_RECEIVED
+ * STATE_EMPTY, STATE_SOLUTION, STATE_SHUFFLE, PROTOCOL_SEPARATOR, PROTOCOL_SPACE, ARRAY_SEPARATOR, PROTOCOL_CONNECT,
+ * PROTOCOL_SENDGAME, PROTOCOL_RECEIVEGAME, PROTOCOL_SENDDATA, PROTOCOL_END, DEFAULT_USER, DEFAULT_PORT, DEFAULT_SERVER
+ * Purpose: This class is contain all constants using throughout the game
+ * @author Ngoc Phuong Khanh Le, Dan McCue
+ * @version 3
+ * @see game
+ * @since 4.21.0
+ */
 public class GameBasic {
 	/**
 	 * Static variable for default dimension
@@ -15,10 +37,6 @@ public class GameBasic {
 	 * Static string for default win icon
 	 */
 	public final static String WIN_ICON = "win";
-	/**
-	 * Static string for default finsihed icon
-	 */
-	public final static String FINISHED_ICON = "finished";
 	/**
 	 * Static string for default lose icon
 	 */

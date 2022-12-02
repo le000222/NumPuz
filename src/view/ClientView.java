@@ -13,6 +13,26 @@ import javax.swing.WindowConstants;
 import controller.ClientController;
 import game.GameBasic;
 
+/**
+ * Purpose: This class is to store GUI for client side
+ * File name: ClientView.java
+ * Course: CST8221 JAP, Lab Section: 301
+ * Date: 4 Dec 2022
+ * Prof: Paulo Sousa
+ * Assignment: A32
+ * Compiler: Eclipse IDE - 2021-09 (4.21.0)
+ * Identification: [Ngoc Phuong Khanh Le, 041004318], [Dan McCue, 040772626]
+ */
+
+/**
+ * Class Name: ClientView.java
+ * Method list: getters, setters, clientView, runClientView
+ * Purpose: This class is to store GUI for client side
+ * @author Ngoc Phuong Khanh Le, Dan McCue
+ * @version 3
+ * @see game
+ * @since 4.21.0
+ */
 public class ClientView extends JFrame {
 
 	/**
@@ -20,7 +40,7 @@ public class ClientView extends JFrame {
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * Panel to store functionPanel and gridPanel
+	 * Panel to store client view
 	 */
 	private JPanel clientView;
 	/**
@@ -28,7 +48,7 @@ public class ClientView extends JFrame {
 	 */
 	private JButton connect, end, sendGame, receiveGame, sendData, play;
 	/**
-	 * Text field for point and timer and text field
+	 * Text field for user name, server and port
 	 */
 	private JTextField userName, server, port;
 	/**
@@ -36,28 +56,71 @@ public class ClientView extends JFrame {
 	 */
 	private JTextArea detail;
 	/**
-	 * ServerController for ServerView
+	 * clientController object for ClientController
 	 */
 	private ClientController clientController;
 	/**
-	 * Setter for serverContoller
-	 * @param controller
+	 * Setter for clientController
+	 * @param controller clientController object
 	 */
 	public void setClientController(ClientController controller) {
 		clientController = controller;
 	}
 	
-	//Getter
+	//Getters, Setters
+	/**
+	 * Getter for connect button
+	 * @return connect button
+	 */
 	public JButton getConnect() { return connect; }
+	/**
+	 * Getter for end button
+	 * @return end button
+	 */
 	public JButton getEnd() { return end; }
+	/**
+	 * Getter for send game config button
+	 * @return sendGame send game config button
+	 */
 	public JButton getSendConfig() { return sendGame; }
+	/**
+	 * Getter for receive game config button
+	 * @return sendGame receive game config button
+	 */
 	public JButton getReceiveConfig() { return receiveGame; }
+	/**
+	 * Getter for send data button
+	 * @return sendData send data button
+	 */
 	public JButton getSendData() { return sendData; }
+	/**
+	 * Getter for play button
+	 * @return play button
+	 */
 	public JButton getPlay() { return play; }
+	/**
+	 * Getter for port text field
+	 * @return port text field
+	 */
 	public JTextField getPort() { return port; }
+	/**
+	 * Getter for user name text field
+	 * @return user name text field
+	 */
 	public JTextField getUserName() { return userName; }
+	/**
+	 * Getter for server text field
+	 * @return server text field
+	 */
 	public JTextField getServer() { return server; }
+	/**
+	 * Getter for detail text area
+	 * @return detail text area for current execution
+	 */
 	public JTextArea getDetail() { return detail; }
+	/**
+	 * Setter for detail text area, append message into detail text area
+	 */
 	public void setDetail(String message) { detail.append(message + " \n"); }
 	
 	/**
@@ -77,6 +140,10 @@ public class ClientView extends JFrame {
 		this.setSize(900, 700);
 	}
 	
+	/**
+	 * Panel for client view
+	 * @return panel for client view
+	 */
 	private JPanel clientView() {
 		clientView = new JPanel();
 		clientView.setLayout(null);

@@ -17,10 +17,20 @@ import javax.swing.JOptionPane;
 import game.GameBasic;
 
 /**
+ * Purpose: This class is the model for standalone game
+ * File name: GameModel.java
+ * Course: CST8221 JAP, Lab Section: 301
+ * Date: 4 Dec 2022
+ * Prof: Paulo Sousa
+ * Assignment: A12
+ * Compiler: Eclipse IDE - 2021-09 (4.21.0)
+ * Identification [Ngoc Phuong Khanh Le, 041004318], [Dan McCue, 040772626]
+ */
+
+/**
  * Class Name: GameModel.java
- * Method list: main()
- * Constants list: frame
- * Purpose: This class is the model of the game
+ * Method list: getters, setters, shuffle, shuffleNum, shuffleText, calSolutionNum, calSolutionText, swap, handleReceivedConfig
+ * Purpose: This class is the model for standalone game
  * @author Ngoc Phuong Khanh Le, Dan McCue
  * @version 3
  * @see game
@@ -28,7 +38,6 @@ import game.GameBasic;
  */
 public class GameModel {
 
-//	private int points;
 	/**
 	 * shuffled array for numbers
 	 */
@@ -56,11 +65,6 @@ public class GameModel {
 	
 	
 	//getters
-	/**
-	 * getter for gameDat
-	 * @return timer timer counts for a game
-	 */
-	public String getGameString() { return gameString; }
 	/**
 	 * getter for shuffle number array
 	 * @return an array o shuffled number
@@ -161,6 +165,15 @@ public class GameModel {
 		solutionText = chars.toArray(new Character[chars.size()]);
 	}
 	
+	/**
+	 * swap two numbers in shuffle array when ever a button is clicked
+	 * @param isTypeNum true: type is number, false: type is text
+	 * @param dimen grid dimension
+	 * @param selfY black button y coordinate
+	 * @param selfX black button x coordinate
+	 * @param clickedY clicked button y coordinate
+	 * @param clickedX clicked button x coordinate
+	 */
 	public void swap(boolean isTypeNum, int dimen, int selfY, int selfX, int clickedY, int clickedX) {
 		if (isTypeNum) {
 			shuffleNum[selfY*dimen + selfX] = shuffleNum[clickedY*dimen + clickedX];
@@ -171,6 +184,12 @@ public class GameModel {
 		}
 	}
 	
+	/**
+	 * assign shuffle array with config received
+	 * @param gameDim grid dimension received
+	 * @param gameType format received
+	 * @param gameStringArray game config received
+	 */
 	public void handleReceiveConfig(int gameDim, String gameType, String[] gameStringArray) {
 		switch (gameType) {
 		case "Number": // take game config from server as shuffle array and find solution later

@@ -15,27 +15,86 @@ import game.GameMVC;
 import model.GameModel;
 import view.ClientView;
 
+/**
+ * Purpose: This class is to store controller for client view
+ * File name: ClientController.java
+ * Course: CST8221 JAP, Lab Section: 301
+ * Date: 4 Dec 2022
+ * Prof: Paulo Sousa
+ * Assignment: A32
+ * Compiler: Eclipse IDE - 2021-09 (4.21.0)
+ * Identification: [Ngoc Phuong Khanh Le, 041004318], [Dan McCue, 040772626]
+ */
+
+/**
+ * Class Name: ClientController.java
+ * Method list: clientConnect, clientEnd, clientSendGame, clientReceiveGame, clientSendData, clientPlay
+ * Purpose: This class is to store controller for client view
+ * @author Ngoc Phuong Khanh Le, Dan McCue
+ * @version 3
+ * @see game
+ * @since 4.21.0
+ */
 public class ClientController implements ActionListener {
 
+	/**
+	 * clientView object in ClientView
+	 */
 	private ClientView clientView = null;
+	/**
+	 * gameMVC object in GameMVC
+	 */
 	private GameMVC gameMVC = null;
+	/**
+	 * socket object in Socket
+	 */
 	private Socket socket = null;
+	/**
+	 * inputServer object in BufferedReader: receive message from server to client
+	 */
 	private BufferedReader inputServer;
+	/**
+	 * outputClient object in PrintStream: send message from client to server
+	 */
 	private PrintStream outputClient;
+	/**
+	 * port number
+	 */
 	private int port;
+	/**
+	 * server's name
+	 */
 	private String server;
+	/**
+	 * client ID as string
+	 */
 	private String clientID;
+	/**
+	 * check if client is connected to server or not
+	 */
 	private boolean clientConnected = false;
+	/**
+	 * check if client receive game config from server or not
+	 */
 	private boolean isReceivedConfig = false;
 	
+	/**
+	 * default constructor
+	 */
 	public ClientController() {}
-	
+	/**
+	 * overloading constructor
+	 * @param clientView object from ClientView
+	 */
 	public ClientController(ClientView clientView) {
 		ClientController clientController = new ClientController();
 		clientController.clientView = clientView;
 		clientView.setClientController(clientController);
 	}
 
+	/**
+	 * override method
+	 */
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == clientView.getConnect()) {
@@ -74,19 +133,14 @@ public class ClientController implements ActionListener {
 		}
 	}
 	
-	private void displayExecution(String message) {
-		clientView.setDetail(message);
-	}
-	
-	private void displayErrorMessage(String errorMessage, String title) {
-		JOptionPane.showMessageDialog(null, errorMessage, title, JOptionPane.ERROR_MESSAGE);
-	}
-	
+	/**
+	 * connect client with server
+	 */
 	private void clientConnect() {
-		displayExecution("Connecting...................");
-		displayExecution("Connecting with server on " + server + " at port " + port);
 		port = Integer.parseInt(clientView.getPort().getText());
 		server = clientView.getServer().getText();
+		displayExecution("Connecting...................");
+		displayExecution("Connecting with server on " + server + " at port " + port);
 		
 		try {
 			socket = new Socket(server, port);
@@ -94,12 +148,15 @@ public class ClientController implements ActionListener {
 			outputClient = new PrintStream(socket.getOutputStream());
 			clientConnected = true;
 			clientID = inputServer.readLine(); // read clientID from server
+			
 			String consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_CONNECT;
 			outputClient.println(consoleData);
 			outputClient.flush();
 			displayExecution("Client [" + clientID + "]: " + consoleData);
+			
 			String serverData = inputServer.readLine();
 			displayExecution("Server: " + serverData);
+			
 			// Enable and disable buttons
 			clientView.getConnect().setEnabled(false);
 			clientView.getSendConfig().setEnabled(true);
@@ -112,6 +169,9 @@ public class ClientController implements ActionListener {
 		}
 	}
 	
+	/**
+	 * disconnect client from server
+	 */
 	private void clientEnd() {
 		if (clientConnected) {
 			try {
@@ -129,9 +189,16 @@ public class ClientController implements ActionListener {
 		}
 		displayExecution("Disconnecting.........");
 		displayExecution("Disconnecting with server on " + server + " at port " + port);
+		if (gameMVC != null) {
+			gameMVC.gameView.dispose();
+		}
 		clientView.dispose();
+		System.exit(0);
 	}
 	
+	/**
+	 * allow client to play game
+	 */
 	private void clientPlayGame() {
 		if (isReceivedConfig) {
 			gameMVC.gameView.setVisible(true);
@@ -141,6 +208,9 @@ public class ClientController implements ActionListener {
 		}
 	}
 	
+	/**
+	 * allow client to send data to server
+	 */
 	private void clientSendData() {
 		displayExecution("Sending data from client [" + clientID + "].........");
 		try {
@@ -158,54 +228,69 @@ public class ClientController implements ActionListener {
 			displayExecution("Client[" + clientID + "]: " + consoleData);
 			String serverData = inputServer.readLine();
 			displayExecution("Server: " + serverData);
+			
 		} catch (IOException e) {
 			displayExecution(e.getMessage());
 			displayErrorMessage(e.getMessage(), "Error");
 		}
 	}
 	
+	/**
+	 * allow client to send game config to server
+	 */
 	private void clientSendGame() {
 		displayExecution("Sending Game Config from client[" + clientID + "]..............");
 		String consoleData = "";
 		String gameString = "";
 		try {
+			
 			clientID = inputServer.readLine();
 			if (gameMVC == null) {
 				consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_SENDGAME 
 						+ GameBasic.PROTOCOL_SEPARATOR + GameBasic.DEFAULT_GAMECONFIG;
 			}
 			else {
-				for (int i = 0; i < gameMVC.gameModel.getShuffleNum().length; i++) {
-					gameString += gameMVC.gameModel.getShuffleNum()[i] + ",";
+				if (gameMVC.gameView.getFormat().getSelectedIndex() == 0) {
+					for (int i = 0; i < gameMVC.gameModel.getShuffleNum().length; i++) {
+						gameString += gameMVC.gameModel.getShuffleNum()[i] + ",";
+					}
 				}
-				consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_SENDGAME + GameBasic.PROTOCOL_SEPARATOR 
-						+ gameMVC.gameView.getDimension() + GameBasic.PROTOCOL_SPACE + (gameMVC.gameView.isTypeNum() ? "Number" : "Type") 
-						+ GameBasic.PROTOCOL_SPACE + gameString;
+				else {
+					for (int i = 0; i < gameMVC.gameModel.getShuffleText().length; i++) {
+						gameString += gameMVC.gameModel.getShuffleText()[i] + ",";
+					}
+				}
+			consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_SENDGAME + GameBasic.PROTOCOL_SEPARATOR 
+					+ gameMVC.gameView.getDimension() + GameBasic.PROTOCOL_SPACE + (gameMVC.gameView.isTypeNum() ? "Number" : "Text") 
+					+ GameBasic.PROTOCOL_SPACE + gameString;
 			}
 			outputClient.println(consoleData);
 			outputClient.flush();
 			displayExecution("Client[" + clientID + "]:" + consoleData);
+			
 			String serverData = inputServer.readLine();
 			displayExecution("Server: " + serverData);
+			
 		} catch (Exception e) {
 			displayExecution(e.getMessage());
 			displayErrorMessage(e.getMessage(), "Error");
 		}
 	}
 	
+	/**
+	 * allow client to receive game config from server or any client that sends game config
+	 */
 	private void clientReceiveGame() {
 		displayExecution("Receiving Game Config from client[" + clientID + "]..............");
-		String consoleData = "";
-		String serverData = "";
 		isReceivedConfig = true;
 		
 		try {
 			clientID = inputServer.readLine();
-			consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_RECEIVEGAME;
+			String consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_RECEIVEGAME;
 			outputClient.println(consoleData);
 			outputClient.flush();
 			displayExecution("Client[" + clientID + "]:" + consoleData);
-			serverData = inputServer.readLine();
+			String serverData = inputServer.readLine();
 			displayExecution("Server: " + serverData);
 			String[] gameData = serverData.split(GameBasic.PROTOCOL_SEPARATOR);
 			String gameString = gameData[2];
@@ -218,5 +303,22 @@ public class ClientController implements ActionListener {
 			displayExecution(e.getMessage());
 			displayErrorMessage(e.getMessage(), "Error");
 		}
+	}
+	
+	/**
+	 * display executions continuously after the others
+	 * @param message message to display
+	 */
+	private void displayExecution(String message) {
+		clientView.getDetail().append(message + "\n");
+	}
+	
+	/**
+	 * display error message
+	 * @param errorMessage error message from exceptions
+	 * @param title title for the error popup window
+	 */
+	private void displayErrorMessage(String errorMessage, String title) {
+		JOptionPane.showMessageDialog(null, errorMessage, title, JOptionPane.ERROR_MESSAGE);
 	}
 }

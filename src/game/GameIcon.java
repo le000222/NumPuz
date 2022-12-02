@@ -44,9 +44,6 @@ public class GameIcon  extends JFrame {
 		case GameBasic.WIN_ICON:
 			imgPath = "resources/GameWin.png";
 			break;
-		case GameBasic.FINISHED_ICON:
-			imgPath = "resources/GameFinished.png";
-			break;
 		case GameBasic.LOSE_ICON:
 			imgPath = "resources/GameLose.png";
 			break;

@@ -34,7 +34,7 @@ import model.GameModel;
  * Purpose: This class is to store all of the GUI components and anything that relates to the interface of the game
  * File name: GameView.java
  * Course: CST8221 JAP, Lab Section: 301
- * Date: 2 Oct 2022
+ * Date: 4 Dec 2022
  * Prof: Paulo Sousa
  * Assignment: A12
  * Compiler: Eclipse IDE - 2021-09 (4.21.0)
@@ -43,14 +43,9 @@ import model.GameModel;
 
 /**
  * Class Name: GameView.java
- * Method list: getDim(), getFormat(), resetGrid(), shuffleNum(), shuffleText(), 
- * displayTextInput(), setGrid(), compConfig(), menuPanel(), helpPanel(), gamePanel(), tabPanel()
- * Constants list: HEIGHT, WIDTH, GRID_SIZE, tabs, menu, grids, help, game, textInput,
- * save, load, start, reset, show, hide, design play, dim, type, point, timer, detail,
- * shuffle[], matrix[][], border, dimension, isInitialLoad
- * Class list: StartGame, Design
- * Purpose: This class is to store all of the GUI components
- * and functionalities to implement the game
+ * Method list: getters, setters, getDimension, isTypeNum, gamePanel, menuBar, gridPanel, functionalPanel, compConfig, resetGrid
+ * receivedGameConfig, setTextOrInitialGrid, initializedNewGrid, initializedNewGridNum, initializeNewGridText, removeOldGrid, displayTextInput
+ * Purpose: This class is to store all of the GUI components and functionalities to implement the game
  * @author Ngoc Phuong Khanh Le, Dan McCue
  * @version 3
  * @see game
@@ -157,6 +152,9 @@ public class GameView  extends JFrame {
 	 * Old dimension
 	 */
 	private int oldDim;
+	/**
+	 * check if the game config is received from server or not
+	 */
 	private boolean isReceivedConfig;
 	
 	//Getter methods
@@ -325,7 +323,7 @@ public class GameView  extends JFrame {
 	public JPanel gamePanel() {
 		//add content to main JPanel
 		gamePanel = new JPanel(new BorderLayout());
-		gamePanel.add(functionPlay(), BorderLayout.EAST);
+		gamePanel.add(functionPanel(), BorderLayout.EAST);
 		gamePanel.add(gridPanel(), BorderLayout.WEST);
 		return gamePanel;
 	}
@@ -396,7 +394,7 @@ public class GameView  extends JFrame {
 	 * Store all components that make up the function panel
 	 * @return JPanel all components that are contained in function panel
 	 */
-	private JPanel functionPlay() {
+	private JPanel functionPanel() {
 		// functions panel initialization
 		functionPanel = new JPanel();
 		functionPanel.setLayout(new GridBagLayout());
@@ -521,20 +519,21 @@ public class GameView  extends JFrame {
 	    panel.add(comp, gbc);
 	}
 	
+	/**
+	 * function runs when user receive config from server and load the received game config
+	 */
 	public void receivedGameConfig() {
 		String[] gameConfig = GameModel.gameString.split(GameBasic.PROTOCOL_SPACE);
 		int gameDim = Integer.parseInt(gameConfig[0]);
 		String gameFormat = gameConfig[1];
 		int indexType = 0;
-		if (gameFormat.equals("Number")) {
-			indexType = 0;
-		} else {
-			indexType = 1;
-		}
+		if (gameFormat.equals("Number")) { indexType = 0; } 
+		else { indexType = 1; }
 		String gameString = gameConfig[2];
 		dim.setSelectedIndex(gameDim-3);
 		format.setSelectedIndex(indexType);
 		String[] gameStringArray = gameString.split(",");
+		detail.setText(gameString);
 		gameModel.handleReceiveConfig(gameDim, gameFormat, gameStringArray);
 		removeOldGrid(getDimension());
 		resetGrid(gameDim, 2);
