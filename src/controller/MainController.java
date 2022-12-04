@@ -30,18 +30,17 @@ public class MainController implements ActionListener {
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == mainView.getRun()) {
 			int gameType = mainView.getGameType().getSelectedIndex();
+			mainView.dispose();
 			switch (gameType) {
 			case 1:
 				new GameMVC(!GameBasic.RECEIVED_CONFIG);
 				break;
 			case 2:
-				mainView.dispose();
 				ServerView serverView = new ServerView();
 				new ServerController(serverView);
 				serverView.runServerView();
 				break;
 			case 3:
-				mainView.dispose();
 				ClientView clientView = new ClientView();
 				new ClientController(clientView);
 				clientView.runClientView();

@@ -62,6 +62,14 @@ public class GameModel {
 	 * Game String Config received from Server
 	 */
 	public static String gameString = GameBasic.DEFAULT_GAMECONFIG;
+	/**
+	 * Game String Config received from Server
+	 */
+	public static int points = 0;
+	/**
+	 * Game String Config received from Server
+	 */
+	public static int timer = 0;
 	
 	
 	//getters
@@ -107,6 +115,9 @@ public class GameModel {
 			treeSet.add(random);
 		}
 		shuffleNum = treeSet.toArray(new Integer[treeSet.size()]);
+		for (int i = 0; i < shuffleNum.length; i++) {
+			System.out.print(shuffleNum[i]);
+		}
 	}
 
 	/**
@@ -127,10 +138,12 @@ public class GameModel {
 		int size = dim * dim;
 		
 		shuffle(size);
+		System.out.println(size);
 		shuffleText = new Character[size];
 		// Assign back char from chars ArrayList to according index from shuffleNum
 		for (int i = 0; i < size; i++) {
 			shuffleText[i] = solutionText[shuffleNum[i]];
+			System.out.println(shuffleText[i]);
 		}		
 	}
 	
@@ -154,15 +167,27 @@ public class GameModel {
 	 * calculate solution for text array
 	 * @param text text entered by users from view
 	 * @param dim dimension selected by users
+	 * @param state 0: standalone, 1: received config
 	 */
-	public void calSolutionText(String text, int dim) {
+	public void calSolutionText(String text, int dim, int state) {
 		ArrayList<Character> chars = new ArrayList<>();
-		int i;
-		for (i = 0; ( i < text.length() ) && ( (i+1) < (dim*dim) ) ; i++) {
+		int len = 0;
+		if (state == 0) {
+			len = dim*dim - 1;
+		} else {
+			len = dim*dim;
+		}
+		System.out.println(dim*dim);
+		for (int i = 0; i < len ; i++) {
 			chars.add(text.charAt(i)); 
         }
-		chars.add('0');
+		if (state == 0) {
+			chars.add('0');
+		}
 		solutionText = chars.toArray(new Character[chars.size()]);
+		for (int i = 0; i < len; i++) {
+			System.out.println(solutionText[i]);
+		}	
 	}
 	
 	/**
@@ -202,8 +227,13 @@ public class GameModel {
 			calSolutionNum(gameDim);
 			break;
 		case "Text": // take game config from server as solution and shuffle later
-			calSolutionText(gameString, gameDim);
-			shuffleText(gameString, gameDim);
+			String text = "";
+			for (int i = 0; i < gameStringArray.length; i++) {
+				text += gameStringArray[i];
+				System.out.println(text);
+			}
+			calSolutionText(text, gameDim, 1);
+			shuffleText(text, gameDim);
 			break;
 		default:
 			JOptionPane.showMessageDialog(null, "Invalid game type", "Error", JOptionPane.ERROR_MESSAGE);	

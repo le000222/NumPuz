@@ -72,7 +72,7 @@ public class GameBasic {
 	/**
 	 * Separator for game config in send and receive game config
 	 */
-	public final static String PROTOCOL_SPACE = " ";
+	public final static String PROTOCOL_HYPHEN = "-";
 	/**
 	 * Separator for game config in send and receive game config
 	 */
@@ -112,7 +112,7 @@ public class GameBasic {
 	/**
 	 * Default game config 
 	 */
-	public final static String DEFAULT_GAMECONFIG = "3 Number 8,4,5,3,7,0,1,6,2";
+	public final static String DEFAULT_GAMECONFIG = "3-Number-8,4,5,3,7,0,1,6,2";
 	/**
 	 * Check if game config is received from server or not
 	 */

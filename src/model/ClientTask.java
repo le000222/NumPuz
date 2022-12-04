@@ -35,10 +35,6 @@ public class ClientTask extends Thread {
 	 */
 	private Socket socket;
 	/**
-	 * num of clients
-	 */
-	private int nclients;
-	/**
 	 * String for data.
 	 */
 	private String clientID, clientData, protocol;
@@ -71,10 +67,9 @@ public class ClientTask extends Thread {
 	 * @param s Socket each client socket
 	 * @param nclient Number of client
 	 */
-	public ClientTask(Socket socket, int nclient, int nclients) {
+	public ClientTask(Socket socket, int nclient) {
 		this.socket = socket;
-		clientID = Integer.toString(nclients);
-		this.nclients = nclients;
+		clientID = Integer.toString(nclient);
 		
 		try {
 			outputServer = new PrintStream(socket.getOutputStream());
@@ -104,6 +99,14 @@ public class ClientTask extends Thread {
 				protocol = dataSplit[1];
 				switch (protocol) {
 				case GameBasic.PROTOCOL_CONNECT:
+					String name = dataSplit[2];
+					index = findClientTaskByClientID(clientID);
+					if (index != -1) {
+						User user = serverController.getUser().get(index);
+						user.setPoints(0);
+						user.setTimer(0);
+						user.setUserName(name);
+					}
 					serverController.displayExecution("Connecting to client[" + clientID + "]..............");
 					consoleData = "client[" + clientID + "]: connected";
 					outputServer.println(consoleData);
@@ -128,7 +131,7 @@ public class ClientTask extends Thread {
 					break;
 				case GameBasic.PROTOCOL_SENDDATA: // send data config
 					serverController.displayExecution("Data sent from client[" + clientID + "].............");
-					String[] userData = dataSplit[2].split(GameBasic.PROTOCOL_SPACE);
+					String[] userData = dataSplit[2].split(GameBasic.PROTOCOL_HYPHEN);
 					String userName = userData[0];
 					int points = Integer.parseInt(userData[1]);
 					int timer = Integer.parseInt(userData[2]);
@@ -140,7 +143,7 @@ public class ClientTask extends Thread {
 						user.setTimer(timer);
 						user.setUserName(userName);
 						consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_SENDDATA + GameBasic.PROTOCOL_SEPARATOR 
-								+ userName + GameBasic.PROTOCOL_SPACE + points + GameBasic.PROTOCOL_SPACE + timer + GameBasic.PROTOCOL_SPACE;
+								+ userName + GameBasic.PROTOCOL_HYPHEN + points + GameBasic.PROTOCOL_HYPHEN + timer;
 						outputServer.println(consoleData);
 						outputServer.flush();
 						serverController.displayExecution("Sent Message[" + ++numSendMsg + "]: " + consoleData);
@@ -152,11 +155,11 @@ public class ClientTask extends Thread {
 					index = findClientTaskByClientID(clientID);
 					if (index != -1) {
 						serverController.getClientTask().remove(index);
-						nclients--;
+						serverController.setNclients(serverController.getNclients()-1);
 						runningClient = false;
-						serverController.displayExecution("Current client number: " + nclients);
-						if (nclients == 0 && serverController.getIsFinalized()) {
-							serverController.displayExecution("Ending server...");
+						serverController.displayExecution("Current client number: " + serverController.getNclients());
+						if (serverController.getNclients() == 0 && serverController.getIsFinalized()) {
+							serverController.displayExecution("Ending server..............");
 							socket.close();
 							System.exit(0);
 						}

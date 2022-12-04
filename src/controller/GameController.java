@@ -203,6 +203,7 @@ public class GameController implements ActionListener, MouseListener {
 			if (e.getSource() == gameView.getDisplay()) {
 				if (gameView.isTypeNum()) { actionNumDisplay(); }
 				else if (!gameView.isTypeNum()) { actionTextDisplay(); }
+				isArrayShuffle = false;
 			}
 			// random number
 			else if (e.getSource() == gameView.getRand()) {
@@ -217,6 +218,8 @@ public class GameController implements ActionListener, MouseListener {
 		if (e.getSource() == gameView.getStop()) {
 			if (JOptionPane.showConfirmDialog(null, "Stop and restart the game?", "", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				timerPause();
+				GameModel.points = Integer.parseInt(gameView.getPoint().getText());
+				GameModel.timer = Integer.parseInt(gameView.getTimer().getText());
 				gameIsRunning = false;
 				timerRunning = false;
 				isArrayShuffle = false;
@@ -254,6 +257,8 @@ public class GameController implements ActionListener, MouseListener {
 				gameIsRunning = false;
 				isArrayShuffle = false;
 				timerPause();
+				GameModel.points = Integer.parseInt(gameView.getPoint().getText());
+				GameModel.timer = Integer.parseInt(gameView.getTimer().getText());
 				printSolution();
 				gameView.getDesign().setSelected(true);
 				gameView.getDesign().doClick();
@@ -309,7 +314,7 @@ public class GameController implements ActionListener, MouseListener {
 	 * Handle each button whenever it is clicked
 	 */
 	@Override
-	public void mouseClicked(MouseEvent e) {
+	public void mousePressed(MouseEvent e) {
 		if (gameIsRunning) {
 			JButton self = (JButton) e.getSource();
 			// if button clicked isn't near the black button, doesnt change anything
@@ -339,6 +344,8 @@ public class GameController implements ActionListener, MouseListener {
 				gameView.getStop().setEnabled(false);
 				return;
 			}
+			GameModel.points = Integer.parseInt(gameView.getPoint().getText());
+			GameModel.timer = Integer.parseInt(gameView.getTimer().getText());
 		}
 		else {
 			JOptionPane.showMessageDialog(null, "Please choose \"Play\" mode to move the buttons");
@@ -533,7 +540,7 @@ public class GameController implements ActionListener, MouseListener {
 			JOptionPane.showMessageDialog(null, "Text length is not large enough to store in grids dimension", "Error", 0);
 			return;
 		}
-		gameModel.calSolutionText(text, gameView.getDimension());
+		gameModel.calSolutionText(text, gameView.getDimension(), 0);
 		gameView.removeOldGrid(gameView.getDimension());
 		gameView.resetGrid(gameView.getDimension(), 1);
 	}
@@ -702,7 +709,7 @@ public class GameController implements ActionListener, MouseListener {
 	}
 
 	@Override
-	public void mousePressed(MouseEvent e) {}
+	public void mouseClicked(MouseEvent e) {}
 	@Override
 	public void mouseReleased(MouseEvent e) {}
 	@Override

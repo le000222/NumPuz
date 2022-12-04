@@ -303,11 +303,11 @@ public class GameView  extends JFrame {
 	
 	public void runStandAloneView() {
 		this.add(gamePanel());
+		design.doClick();
 		if (isReceivedConfig) {
 			receivedGameConfig();
 		}
 		this.setJMenuBar(menuBar());
-		design.doClick();
 		this.setTitle("NumPuz");
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		this.setIconImage(new ImageIcon(getClass().getClassLoader().getResource("resources/GameIcon.png")).getImage());
@@ -523,7 +523,7 @@ public class GameView  extends JFrame {
 	 * function runs when user receive config from server and load the received game config
 	 */
 	public void receivedGameConfig() {
-		String[] gameConfig = GameModel.gameString.split(GameBasic.PROTOCOL_SPACE);
+		String[] gameConfig = GameModel.gameString.split(GameBasic.PROTOCOL_HYPHEN);
 		int gameDim = Integer.parseInt(gameConfig[0]);
 		String gameFormat = gameConfig[1];
 		int indexType = 0;
@@ -539,6 +539,11 @@ public class GameView  extends JFrame {
 		removeOldGrid(getDimension());
 		resetGrid(gameDim, 2);
 		controller.setArrayShuffle(true);
+		display.setEnabled(false);
+		dim.setEnabled(false);
+		format.setEnabled(false);
+		save.setEnabled(false);
+		load.setEnabled(false);
 	}
 	
 	/**

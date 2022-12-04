@@ -149,7 +149,8 @@ public class ClientController implements ActionListener {
 			clientConnected = true;
 			clientID = inputServer.readLine(); // read clientID from server
 			
-			String consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_CONNECT;
+			String consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_CONNECT 
+					+ GameBasic.PROTOCOL_SEPARATOR + clientView.getUserName().getText();
 			outputClient.println(consoleData);
 			outputClient.flush();
 			displayExecution("Client [" + clientID + "]: " + consoleData);
@@ -218,11 +219,11 @@ public class ClientController implements ActionListener {
 			String userName = clientView.getUserName().getText();
 			int points = 0, timer = 0;
 			if (gameMVC != null && gameMVC.gameView != null) {
-				points = Integer.parseInt(gameMVC.gameView.getPoint().getText());
-				timer = Integer.parseInt(gameMVC.gameView.getTimer().getText());
+				points = GameModel.points;
+				timer = GameModel.timer;
 			}
 			String consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_SENDDATA + GameBasic.PROTOCOL_SEPARATOR 
-					+ userName + GameBasic.PROTOCOL_SPACE + points + GameBasic.PROTOCOL_SPACE + timer;
+					+ userName + GameBasic.PROTOCOL_HYPHEN + points + GameBasic.PROTOCOL_HYPHEN + timer;
 			outputClient.println(consoleData);
 			outputClient.flush();
 			displayExecution("Client[" + clientID + "]: " + consoleData);
@@ -261,8 +262,8 @@ public class ClientController implements ActionListener {
 					}
 				}
 			consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_SENDGAME + GameBasic.PROTOCOL_SEPARATOR 
-					+ gameMVC.gameView.getDimension() + GameBasic.PROTOCOL_SPACE + (gameMVC.gameView.isTypeNum() ? "Number" : "Text") 
-					+ GameBasic.PROTOCOL_SPACE + gameString;
+					+ gameMVC.gameView.getDimension() + GameBasic.PROTOCOL_HYPHEN + (gameMVC.gameView.isTypeNum() ? "Number" : "Text") 
+					+ GameBasic.PROTOCOL_HYPHEN + gameString;
 			}
 			outputClient.println(consoleData);
 			outputClient.flush();

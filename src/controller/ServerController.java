@@ -94,6 +94,16 @@ public class ServerController implements ActionListener {
 	 * @return isFinalized true: check box is checked, false: check box isnt checked
 	 */
 	public boolean getIsFinalized() { return isFinalized; }
+	/**
+	 * Getters for total number of clients
+	 * @return nclients num of clients
+	 */
+	public int getNclients() { return nclients; }
+	/**
+	 * Setter for total number of clients
+	 * @param nclients num of clients
+	 */
+	public void setNclients(int nclients) { this.nclients = nclients; }
 	
 	/**
 	 * Default constructor
@@ -155,8 +165,8 @@ public class ServerController implements ActionListener {
 					
 					while (runningServer) {
 						clientSocket = serverSocket.accept();
-						nclient += 1;
-						nclients += 1;
+						nclient++;
+						nclients++;
 						displayExecution("Current number of clients: " + nclients);
 						displayExecution("Connecting " + clientSocket.getInetAddress() + " at port " + clientSocket.getPort());
 					
@@ -165,13 +175,12 @@ public class ServerController implements ActionListener {
 						usersList.add(user);
 						
 						displayExecution("New task [" + (nclient-1) + "] created...");
-						ClientTask serverReply = new ClientTask(clientSocket, nclient, nclients);
+						ClientTask serverReply = new ClientTask(clientSocket, nclient);
 						clientTasks.add(serverReply);
 						serverReply.setServerController(serverController);
 						serverReply.start(); // invoke run() in ServerReply
 					}
 				} catch (Exception e) {
-					System.out.println(e);
 					displayExecution(e.getMessage());
 					displayErrorMessage(e.getMessage(), "Unable to start server");
 				}
