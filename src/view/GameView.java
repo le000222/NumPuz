@@ -529,12 +529,13 @@ public class GameView  extends JFrame {
 		int indexType = 0;
 		if (gameFormat.equals("Number")) { indexType = 0; } 
 		else { indexType = 1; }
-		String gameString = gameConfig[2];
 		dim.setSelectedIndex(gameDim-3);
 		format.setSelectedIndex(indexType);
-		String[] gameStringArray = gameString.split(",");
-		detail.setText(gameString);
-		gameModel.handleReceiveConfig(gameDim, gameFormat, gameStringArray);
+		String gameString = gameConfig[2];
+		if (indexType == 1) {
+			detail.setText(gameString);
+		}
+		gameModel.handleReceiveConfig(gameDim, gameFormat, gameString);
 		removeOldGrid(getDimension());
 		resetGrid(gameDim, 2);
 		controller.setArrayShuffle(true);

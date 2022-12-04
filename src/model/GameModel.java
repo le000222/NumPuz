@@ -190,7 +190,8 @@ public class GameModel {
 	 * @param gameType format received
 	 * @param gameStringArray game config received
 	 */
-	public void handleReceiveConfig(int gameDim, String gameType, String[] gameStringArray) {
+	public void handleReceiveConfig(int gameDim, String gameType, String gameString) {
+		String[] gameStringArray = gameString.split(",");
 		switch (gameType) {
 		case "Number": // take game config from server as shuffle array and find solution later
 			treeSet = new LinkedHashSet<>();

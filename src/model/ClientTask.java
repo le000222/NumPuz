@@ -136,7 +136,7 @@ public class ClientTask extends Thread {
 					index = findClientTaskByClientID(clientID);
 					if (index != -1) {
 						User user = serverController.getUser().get(index);
-						user.setPoints(points);
+						user.setPoints(user.getPoints() + points);
 						user.setTimer(timer);
 						user.setUserName(userName);
 						consoleData = clientID + GameBasic.PROTOCOL_SEPARATOR + GameBasic.PROTOCOL_SENDDATA + GameBasic.PROTOCOL_SEPARATOR 
