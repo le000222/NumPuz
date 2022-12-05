@@ -115,9 +115,6 @@ public class GameModel {
 			treeSet.add(random);
 		}
 		shuffleNum = treeSet.toArray(new Integer[treeSet.size()]);
-		for (int i = 0; i < shuffleNum.length; i++) {
-			System.out.print(shuffleNum[i]);
-		}
 	}
 
 	/**
@@ -143,7 +140,6 @@ public class GameModel {
 		// Assign back char from chars ArrayList to according index from shuffleNum
 		for (int i = 0; i < size; i++) {
 			shuffleText[i] = solutionText[shuffleNum[i]];
-			System.out.println(shuffleText[i]);
 		}		
 	}
 	
@@ -177,7 +173,6 @@ public class GameModel {
 		} else {
 			len = dim*dim;
 		}
-		System.out.println(dim*dim);
 		for (int i = 0; i < len ; i++) {
 			chars.add(text.charAt(i)); 
         }
@@ -185,9 +180,6 @@ public class GameModel {
 			chars.add('0');
 		}
 		solutionText = chars.toArray(new Character[chars.size()]);
-		for (int i = 0; i < len; i++) {
-			System.out.println(solutionText[i]);
-		}	
 	}
 	
 	/**
@@ -230,7 +222,6 @@ public class GameModel {
 			String text = "";
 			for (int i = 0; i < gameStringArray.length; i++) {
 				text += gameStringArray[i];
-				System.out.println(text);
 			}
 			calSolutionText(text, gameDim, 1);
 			shuffleText(text, gameDim);
